@@ -5,8 +5,9 @@ import { ArrowRight, CheckCircle2, Vote, Trophy, Heart, Copy } from "lucide-reac
 import { motion, AnimatePresence } from "framer-motion";
 import { fetchVotingApi, resolveImageUrl } from "@/lib/api";
 
-const VOTE_OPTIONS = [5, 10, 50, 100];
+const VOTE_OPTIONS = [20, 40, 60, 80, 100];
 const PRICE_PER_VOTE = 100;
+
 
 const getCategoryFlyer = (slug: string) => {
   let normalized = slug
@@ -157,8 +158,9 @@ const NomineeProfile = () => {
   const rawShareText = `Please vote for ${nominee?.name} for ${nominee?.categoryName || nominee?.category || "NACOS Awards 2026"}.
 
 1 Vote: ₦100
-5 Votes: ₦500
-10 Votes: ₦1,000
+20 Votes: ₦2,000
+50 Votes: ₦5,000
+100 Votes: ₦10,000
 
 Your support will be highly appreciated, and God bless you as you do so. Please help ${nominee?.name} win!`;
 
@@ -404,7 +406,8 @@ Your support will be highly appreciated, and God bless you as you do so. Please 
 
 
                 {/* Vote quantity selector */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+                <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 mb-4">
+
                   {VOTE_OPTIONS.map((v) => (
                     <button
                       key={v}
