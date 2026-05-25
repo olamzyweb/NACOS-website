@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import Layout from "@/components/Layout";
-import { ArrowRight, Crown, BarChart2, Vote } from "lucide-react";
+import { ArrowRight, Crown, BarChart2, Vote, CheckCircle2, Heart, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useSearchParams } from "react-router-dom";
 import { fetchVotingApi, resolveImageUrl } from "@/lib/api";
@@ -99,6 +99,14 @@ const Leaderboard = () => {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
+  const [successDetails, setSuccessDetails] = useState<any>(null);
+  const [countdown, setCountdown] = useState(10);
+
+  const handleViewStandings = () => {
+    setSuccessDetails(null);
+    searchParams.delete("reference");
+    setSearchParams(searchParams);
+  };
 
   useEffect(() => {
     const reference = searchParams.get("reference");
@@ -112,12 +120,13 @@ const Leaderboard = () => {
     fetchVotingApi(`/transactions/verify/${reference}`)
       .then((res) => {
         const verificationStatus = res?.data?.status || res?.status;
-        if (verificationStatus === "success") {
+        if (verificationStatus === "success" || verificationStatus === "confirmed") {
           toast({
             title: "Payment Confirmed!",
             description: "Your votes have been counted. Thank you for your support!",
           });
-          // Refresh leaderboard
+          setSuccessDetails(res?.data || res);
+          // Refresh leaderboard in the background
           fetchVotingApi("/leaderboard")
             .then((data) => {
               setNominees(data.nominees || []);
@@ -128,6 +137,8 @@ const Leaderboard = () => {
             description: "Your transaction status is: " + (verificationStatus || "unknown"),
             variant: "destructive",
           });
+          searchParams.delete("reference");
+          setSearchParams(searchParams);
         }
       })
       .catch((err) => {
@@ -137,12 +148,31 @@ const Leaderboard = () => {
           description: "Could not confirm payment automatically. If you were debited, your votes will be tallied shortly.",
           variant: "destructive",
         });
-      })
-      .finally(() => {
         searchParams.delete("reference");
         setSearchParams(searchParams);
       });
   }, [searchParams]);
+
+  useEffect(() => {
+    if (!successDetails) return;
+
+    setCountdown(10);
+    const interval = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          setSuccessDetails(null);
+          searchParams.delete("reference");
+          setSearchParams(searchParams);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [successDetails]);
+
 
   useEffect(() => {
     fetchVotingApi("/leaderboard")
@@ -176,8 +206,127 @@ const Leaderboard = () => {
     );
   }
 
+  if (successDetails) {
+    const nomineeName = successDetails?.metadata?.nominee_name || "your candidate";
+    const votesCount = successDetails?.metadata?.votes || 1;
+    const amountPaid = successDetails?.amount || (votesCount * 100);
+
+    return (
+      <Layout>
+        <div className="bg-slate-50 min-h-screen pt-32 pb-24 flex items-center justify-center relative overflow-hidden">
+          {/* Beautiful glowing backdrops */}
+          <div className="absolute inset-0 opacity-20 pointer-events-none">
+            <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-emerald-500 rounded-full blur-[140px] animate-pulse" />
+            <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-primary rounded-full blur-[140px] animate-pulse" />
+          </div>
+
+          <div className="container max-w-xl px-4 relative z-10">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              className="bg-white rounded-[2.5rem] border border-slate-200 shadow-2xl p-8 sm:p-10 text-center relative overflow-hidden"
+            >
+              {/* Confetti-like Sparkle Details */}
+              <div className="absolute top-6 left-6 text-emerald-400 opacity-40">
+                <Sparkles className="h-6 w-6" />
+              </div>
+              <div className="absolute bottom-6 right-6 text-primary opacity-40">
+                <Sparkles className="h-6 w-6" />
+              </div>
+
+              {/* Animated Success Checkmark Ring */}
+              <div className="flex justify-center mb-6">
+                <motion.div 
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", stiffness: 200, damping: 15 }}
+                  className="h-20 w-20 rounded-full bg-emerald-50 border border-emerald-150 flex items-center justify-center shadow-lg shadow-emerald-100"
+                >
+                  <CheckCircle2 className="h-10 w-10 text-emerald-650" />
+                </motion.div>
+              </div>
+
+              {/* Title & Appreciation message */}
+              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 bg-emerald-50 border border-emerald-100 px-3 py-1 rounded-full">
+                Vote Successful
+              </span>
+              
+              <h1 className="mt-6 font-display text-3xl sm:text-4xl font-black text-slate-900 leading-tight">
+                Thank You For <br className="hidden sm:inline" />Your Support!
+              </h1>
+              
+              <p className="mt-4 text-sm text-slate-500 max-w-sm mx-auto leading-relaxed">
+                Your payment was successfully confirmed and your votes have been counted in the live standings.
+              </p>
+
+              {/* Nominee Receipt card */}
+              <div className="my-8 p-6 rounded-2xl bg-slate-50 border border-slate-200 text-left space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                    <Heart className="h-5 w-5 fill-current text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-sans">Nominee Supported</p>
+                    <p className="font-bold text-slate-800 text-sm">{nomineeName}</p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 border-t border-slate-200/60 pt-4 font-mono text-xs">
+                  <div>
+                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider font-sans">Votes Cast</p>
+                    <p className="font-bold text-slate-800 text-sm mt-0.5">{votesCount} votes</p>
+                  </div>
+                  <div>
+                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider font-sans">Amount Paid</p>
+                    <p className="font-bold text-emerald-800 text-sm mt-0.5">₦{Number(amountPaid).toLocaleString()}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Roll countdown animation */}
+              <div className="mb-8 space-y-2.5">
+                <div className="flex justify-between text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+                  <span>Redirecting to Leaderboard</span>
+                  <span>{countdown}s</span>
+                </div>
+                {/* Horizontal depleted progress bar */}
+                <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                  <motion.div 
+                    initial={{ width: "100%" }}
+                    animate={{ width: "0%" }}
+                    transition={{ duration: 10, ease: "linear" }}
+                    className="bg-emerald-650 h-full rounded-full"
+                  />
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Link
+                  to="/voting/categories"
+                  className="flex-1 inline-flex items-center justify-center gap-1.5 h-12 rounded-full border border-slate-250 bg-white text-slate-700 font-black text-sm hover:bg-slate-50 transition active:scale-95 duration-100 font-bold"
+                >
+                  <Vote className="h-4 w-4" />
+                  Vote Again
+                </Link>
+                <button
+                  onClick={handleViewStandings}
+                  className="flex-1 inline-flex items-center justify-center gap-1.5 h-12 rounded-full bg-slate-900 text-white font-black text-sm hover:bg-slate-800 transition active:scale-95 duration-100 shadow-lg shadow-slate-900/10 font-bold"
+                >
+                  <BarChart2 className="h-4 w-4" />
+                  View Leaderboard
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
+
       <div className="bg-slate-50 min-h-screen pb-24">
 
         <div className="bg-[#08111d] pt-32 pb-24 relative overflow-hidden">
