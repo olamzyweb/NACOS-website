@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { adminFetch, clearAdminSession, loginToAdminSystems, votingAdminFetch } from "@/lib/admin-api";
-import { BarChart3, Calendar, FileText, Flag, Image, LogOut, Settings, ShieldCheck, Trophy, Users, Search, ChevronDown, ChevronUp, Plus, Trash2, Edit2, ImagePlus, Award, Check, X, SlidersHorizontal, ArrowUpDown } from "lucide-react";
+import { BarChart3, Calendar, FileText, Flag, Image, LogOut, Settings, ShieldCheck, Trophy, Users, Search, ChevronDown, ChevronUp, Plus, Trash2, Edit2, ImagePlus, Award, Check, X, SlidersHorizontal, ArrowUpDown, Clock, CreditCard, Receipt } from "lucide-react";
 
 type TabKey = "overview" | "students" | "academics" | "executives" | "events" | "voting";
 
@@ -54,6 +54,35 @@ const AdminPortal = () => {
   const [votingSearchQuery, setVotingSearchQuery] = useState("");
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
   const [uploading, setUploading] = useState(false);
+  const [votingTransactions, setVotingTransactions] = useState<any[]>([]);
+  const [txSearchQuery, setTxSearchQuery] = useState("");
+  const [txStatusFilter, setTxStatusFilter] = useState("all");
+
+  const filteredTransactions = (votingTransactions || []).filter((tx) => {
+    if (txStatusFilter !== "all" && String(tx.status).toLowerCase() !== txStatusFilter) {
+      return false;
+    }
+    if (txSearchQuery.trim()) {
+      const q = txSearchQuery.toLowerCase();
+      const ref = String(tx.reference || "").toLowerCase();
+      const voterName = String(tx.voter_name || "").toLowerCase();
+      const voterEmail = String(tx.voter_email || "").toLowerCase();
+      const nominee = String(tx.nominee_name || "").toLowerCase();
+      const category = String(tx.category_name || "").toLowerCase();
+      const providerRef = String(tx.provider_reference || "").toLowerCase();
+      return (
+        ref.includes(q) ||
+        voterName.includes(q) ||
+        voterEmail.includes(q) ||
+        nominee.includes(q) ||
+        category.includes(q) ||
+        providerRef.includes(q)
+      );
+    }
+    return true;
+  });
+
+
 
   const getStructuredVotingMap = () => {
     const sectionsMap = new Map<string, any>();
@@ -223,9 +252,11 @@ const AdminPortal = () => {
     try {
       const votingDash = await votingAdminFetch("/admin/dashboard");
       const nomineeRows = await votingAdminFetch("/admin/nominees").catch(() => []);
+      const transactionRows = await votingAdminFetch("/admin/transactions").catch(() => []);
       setVotingDashboard(votingDash);
       setVotingSettingsForm(votingDash.settings || {});
       setNominees(nomineeRows || []);
+      setVotingTransactions(transactionRows || []);
       votingConnected = true;
       setVotingOnline(true);
     } catch (err: any) {
@@ -256,19 +287,22 @@ const AdminPortal = () => {
 
   const refreshVoting = async () => {
     try {
-      const [votingDash, nomineeRows] = await Promise.all([
+      const [votingDash, nomineeRows, transactionRows] = await Promise.all([
         votingAdminFetch("/admin/dashboard"),
         votingAdminFetch("/admin/nominees"),
+        votingAdminFetch("/admin/transactions").catch(() => []),
       ]);
       setVotingDashboard(votingDash);
       setVotingSettingsForm(votingDash.settings || {});
       setNominees(nomineeRows || []);
+      setVotingTransactions(transactionRows || []);
       setVotingOnline(true);
     } catch (err: any) {
       toast({ title: "Voting server offline", description: err.message, variant: "destructive" });
       setVotingOnline(false);
     }
   };
+
 
   const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -950,7 +984,195 @@ const AdminPortal = () => {
                   </div>
                 </div>
 
+                {/* ── Voting Transactions Payment Logs ── */}
+                <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm space-y-6">
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-slate-100 pb-5">
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-600">Payment Audit Logs</span>
+                      <h3 className="mt-1 font-display text-xl font-bold text-[#062018] flex items-center gap-2">
+                        <Receipt className="h-5 w-5 text-emerald-600" />
+                        Voting Payment Transactions
+                      </h3>
+                      <p className="text-xs text-slate-500">Live feed and log of all payments for votes handled through Korapay.</p>
+                    </div>
+
+                    {/* Quick Analytics Summary */}
+                    <div className="flex items-center gap-3">
+                      <div className="rounded-xl bg-slate-50 border border-slate-150 px-3.5 py-1.5 text-right">
+                        <p className="text-[8px] uppercase tracking-wider text-slate-400 font-bold">Total Confirmed Amount</p>
+                        <p className="text-sm font-bold text-emerald-800">
+                          {formatCurrency(filteredTransactions.filter(t => t.status === 'confirmed').reduce((acc, t) => acc + Number(t.amount || 0), 0))}
+                        </p>
+                      </div>
+                      <div className="rounded-xl bg-slate-50 border border-slate-150 px-3.5 py-1.5 text-right">
+                        <p className="text-[8px] uppercase tracking-wider text-slate-400 font-bold">Total Votes Cast</p>
+                        <p className="text-sm font-bold text-slate-700">
+                          {filteredTransactions.filter(t => t.status === 'confirmed').reduce((acc, t) => acc + Number(t.votes || 0), 0)} votes
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Filter & Search Controls */}
+                  <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                    <div className="relative flex-1">
+                      <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+                      <Input
+                        type="text"
+                        placeholder="Search by reference, voter name, email, nominee..."
+                        value={txSearchQuery}
+                        onChange={(e) => setTxSearchQuery(e.target.value)}
+                        className="pl-9 h-9 text-xs rounded-xl border border-slate-200 focus:border-[#062018] bg-slate-50/50"
+                      />
+                      {txSearchQuery && (
+                        <button 
+                          onClick={() => setTxSearchQuery("")} 
+                          className="absolute right-3 top-2.5 text-xs text-slate-400 hover:text-slate-600"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Status Tabs */}
+                    <div className="flex flex-wrap items-center gap-1.5 p-1 rounded-xl bg-slate-50 border border-slate-200 w-fit">
+                      {["all", "confirmed", "pending", "failed"].map((status) => (
+                        <button
+                          key={status}
+                          onClick={() => setTxStatusFilter(status)}
+                          className={`h-7 px-3 rounded-lg text-[10px] font-bold uppercase tracking-wider transition ${
+                            txStatusFilter === status
+                              ? "bg-white text-emerald-800 shadow-sm border border-slate-150/50"
+                              : "text-slate-500 hover:text-slate-800"
+                          }`}
+                        >
+                          {status}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Scrollable Table */}
+                  <div className="rounded-2xl border border-slate-150 overflow-hidden shadow-sm">
+                    <div className="overflow-x-auto">
+                      <div className="max-h-[450px] overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-slate-200 [&::-webkit-scrollbar-thumb]:rounded-full">
+                        <table className="w-full text-left border-collapse">
+                          <thead className="sticky top-0 bg-slate-50 border-b border-slate-150 text-[10px] uppercase tracking-wider text-slate-500 font-bold z-10">
+                            <tr>
+                              <th className="p-4">Voter Profile</th>
+                              <th className="p-4">Nominee Details</th>
+                              <th className="p-4 text-center">Votes</th>
+                              <th className="p-4">Amount Paid</th>
+                              <th className="p-4">Reference Keys</th>
+                              <th className="p-4">Status</th>
+                              <th className="p-4 text-right">Date & Time</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-slate-150 text-xs bg-white">
+                            {filteredTransactions.length === 0 ? (
+                              <tr>
+                                <td colSpan={7} className="p-12 text-center text-slate-400 italic bg-slate-50/20">
+                                  <div className="flex flex-col items-center justify-center gap-2 py-4">
+                                    <CreditCard className="h-8 w-8 text-slate-300" />
+                                    <span>No transaction logs match the selected search or filters.</span>
+                                  </div>
+                                </td>
+                              </tr>
+                            ) : (
+                              filteredTransactions.map((tx: any) => {
+                                const createdDate = new Date(tx.created_at || tx.paid_at);
+                                const formattedDate = createdDate.toLocaleDateString("en-NG", {
+                                  year: "numeric",
+                                  month: "short",
+                                  day: "numeric",
+                                });
+                                const formattedTime = createdDate.toLocaleTimeString("en-NG", {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                });
+
+                                return (
+                                  <tr key={tx.id} className="hover:bg-slate-50/50 transition duration-150">
+                                    {/* Voter Column */}
+                                    <td className="p-4">
+                                      <p className="font-bold text-[#062018]">{tx.voter_name || "Anonymous Voter"}</p>
+                                      <p className="text-[10px] text-slate-400 select-all">{tx.voter_email || "no-email@nacos.org"}</p>
+                                    </td>
+                                    
+                                    {/* Target Nominee Column */}
+                                    <td className="p-4">
+                                      {tx.nominee_name ? (
+                                        <>
+                                          <p className="font-semibold text-slate-800">{tx.nominee_name}</p>
+                                          <p className="text-[9px] text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full w-fit mt-0.5 font-medium">{tx.category_name || "Category"}</p>
+                                        </>
+                                      ) : (
+                                        <p className="text-slate-400 italic">Unknown Nominee (ID: {tx.nominee_id})</p>
+                                      )}
+                                    </td>
+
+                                    {/* Votes Column */}
+                                    <td className="p-4 text-center">
+                                      <span className="inline-flex h-6 w-8 items-center justify-center rounded-lg bg-slate-100 font-mono font-bold text-slate-800 border border-slate-200">
+                                        {tx.votes || 0}
+                                      </span>
+                                    </td>
+
+                                    {/* Amount Column */}
+                                    <td className="p-4">
+                                      <span className="font-mono font-bold text-emerald-800">
+                                        {formatCurrency(Number(tx.amount || 0))}
+                                      </span>
+                                    </td>
+
+                                    {/* Reference Keys Column */}
+                                    <td className="p-4">
+                                      <p className="font-mono text-[9px] text-slate-500 font-medium select-all">Ref: {tx.reference || "N/A"}</p>
+                                      {tx.provider_reference && (
+                                        <p className="font-mono text-[8px] text-slate-400 mt-0.5 select-all">Prov: {tx.provider_reference}</p>
+                                      )}
+                                    </td>
+
+                                    {/* Status Column */}
+                                    <td className="p-4">
+                                      {tx.status === "confirmed" && (
+                                        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-250 px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-wider">
+                                          <Check className="h-3 w-3" />
+                                          Confirmed
+                                        </span>
+                                      )}
+                                      {tx.status === "pending" && (
+                                        <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 text-amber-705 border border-amber-250 px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-wider">
+                                          <Clock className="h-3 w-3" />
+                                          Pending
+                                        </span>
+                                      )}
+                                      {tx.status === "failed" && (
+                                        <span className="inline-flex items-center gap-1 rounded-full bg-red-50 text-red-750 border border-red-250 px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-wider">
+                                          <X className="h-3 w-3" />
+                                          Failed
+                                        </span>
+                                      )}
+                                    </td>
+
+                                    {/* Date Column */}
+                                    <td className="p-4 text-right">
+                                      <p className="font-medium text-slate-700">{formattedDate}</p>
+                                      <p className="text-[10px] text-slate-400 mt-0.5">{formattedTime}</p>
+                                    </td>
+                                  </tr>
+                                );
+                              })
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
+
                   {/* Settings Card */}
                   <div className="rounded-[2rem] bg-white p-6 shadow-sm border border-slate-200">
                     <h3 className="font-display text-lg font-bold text-[#062018]">Voting Settings</h3>

@@ -409,4 +409,20 @@ router.delete("/nominees/:id", async (req, res, next) => {
   }
 });
 
+router.get("/transactions", async (_req, res, next) => {
+  try {
+    const [rows] = await pool.query(
+      `SELECT t.*, n.full_name AS nominee_name, c.name AS category_name
+       FROM voting_transactions t
+       LEFT JOIN voting_nominees n ON t.nominee_id = n.id
+       LEFT JOIN voting_categories c ON n.category_id = c.id
+       ORDER BY t.created_at DESC`
+    );
+    res.json(rows);
+  } catch (error) {
+    next(error);
+  }
+});
+
 export default router;
+
