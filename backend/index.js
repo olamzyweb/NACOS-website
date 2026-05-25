@@ -4,8 +4,10 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
 import rateLimit from 'express-rate-limit';
+import axios from 'axios';
 import paymentRoutes from './routes/payment.routes.js';
 import authRoutes from './routes/auth.routes.js';
+import adminAuthRoutes from './routes/admin-auth.routes.js';
 import studentRoutes from './routes/student.routes.js';
 import contentRoutes from './routes/content.routes.js';
 import servicesRoutes from './routes/services.routes.js';
@@ -19,6 +21,9 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// Trust the Render proxy to allow express-rate-limit to see the real user IP
+app.set('trust proxy', 1);
 
 /**
  * SECURITY RATE LIMITING
@@ -53,6 +58,11 @@ app.use(limiter); // Apply general rate limit to all requests
 // Start Birthday Service (Daily checks)
 BirthdayService.start();
 
+// Root route for health checks (prevents 404 on Render/deployment pings)
+app.get('/', (req, res) => {
+  res.status(200).send('NACOS LASUSTECH API is running.');
+});
+
 /**
  * THE CORE ROUTES
  * ---------------------------------------------------------
@@ -62,6 +72,7 @@ BirthdayService.start();
 
 // Registering modular routes
 app.use('/api/auth', authLimiter, authRoutes);
+app.use('/api/admin-auth', authLimiter, adminAuthRoutes);
 app.use('/api/student', studentRoutes);
 app.use('/api/content', contentRoutes);
 app.use('/api/services', servicesRoutes);

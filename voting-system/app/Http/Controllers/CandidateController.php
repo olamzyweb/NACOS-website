@@ -23,7 +23,7 @@ class CandidateController extends Controller
         $eventDate = Setting::getEventDate();
         $siteTitle = Setting::getSiteTitle();
         $paymentProvider = Setting::getPaymentProvider();
-        $paymentProviderLabel = $paymentProvider === 'korapay' ? 'Korapay' : 'Paystack';
+        $paymentProviderLabel = 'Korapay';
 
         // Get rank in category
         $rank = $candidate->rank_in_category;

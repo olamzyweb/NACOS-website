@@ -132,7 +132,6 @@ class VoteTransaction extends Model
     public function getPaymentMethodLabelAttribute(): string
     {
         return match ($this->payment_method) {
-            'paystack' => 'Paystack',
             'korapay' => 'Korapay',
             'bank_transfer' => 'Bank Transfer',
             default => ucfirst(str_replace('_', ' ', $this->payment_method)),

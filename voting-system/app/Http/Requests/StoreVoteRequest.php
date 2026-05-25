@@ -18,7 +18,7 @@ class StoreVoteRequest extends FormRequest
             'voter_name' => 'required|string|max:255',
             'voter_email' => 'required|email|max:255',
             'votes' => 'required|integer|min:1|max:1000',
-            'payment_method' => 'required|in:paystack,korapay,bank_transfer',
+            'payment_method' => 'required|in:korapay,bank_transfer',
         ];
     }
 

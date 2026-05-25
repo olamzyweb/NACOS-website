@@ -28,7 +28,6 @@
             <div>
                 <label class="block text-sm font-medium mb-2">Online Payment Provider</label>
                 <select name="payment_provider" class="w-full px-4 py-3 rounded-xl border border-surface-300 dark:border-surface-600 bg-surface-50 dark:bg-surface-700 focus:ring-2 focus:ring-primary-500 transition">
-                    <option value="paystack" {{ $settings['payment_provider'] === 'paystack' ? 'selected' : '' }}>Paystack</option>
                     <option value="korapay" {{ $settings['payment_provider'] === 'korapay' ? 'selected' : '' }}>Korapay</option>
                 </select>
                 <p class="text-xs text-surface-400 mt-1">Used for online card/USSD payments</p>

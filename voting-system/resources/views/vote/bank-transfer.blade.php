@@ -49,7 +49,7 @@
                 </div>
                 <div class="flex justify-between">
                     <span class="text-surface-500">Account Name</span>
-                    <span class="font-medium">{{ \App\Models\Setting::get('account_name', 'NACOS Awards') }}</span>
+                    <span class="font-medium">{{ \App\Models\Setting::get('account_name', 'NACOS Day Awards') }}</span>
                 </div>
             </div>
         </div>

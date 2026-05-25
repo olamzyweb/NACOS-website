@@ -70,7 +70,7 @@ class Setting extends Model
      */
     public static function getSiteTitle(): string
     {
-        return static::get('site_title', 'NACOS Awards');
+        return static::get('site_title', 'NACOS Day Awards');
     }
 
     /**
@@ -78,6 +78,6 @@ class Setting extends Model
      */
     public static function getPaymentProvider(): string
     {
-        return static::get('payment_provider', 'paystack');
+        return static::get('payment_provider', 'korapay');
     }
 }

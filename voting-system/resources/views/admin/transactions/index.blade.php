@@ -34,7 +34,6 @@
             <label class="block text-xs font-medium mb-1">Method</label>
             <select name="method" class="px-3 py-2 rounded-lg border border-surface-300 dark:border-surface-600 bg-surface-50 dark:bg-surface-700 text-sm focus:ring-2 focus:ring-primary-500">
                 <option value="">All</option>
-                <option value="paystack" {{ request('method') === 'paystack' ? 'selected' : '' }}>Paystack</option>
                 <option value="korapay" {{ request('method') === 'korapay' ? 'selected' : '' }}>Korapay</option>
                 <option value="bank_transfer" {{ request('method') === 'bank_transfer' ? 'selected' : '' }}>Bank Transfer</option>
             </select>
@@ -81,14 +80,8 @@
                     <td class="px-4 py-3 text-center font-bold text-sm">{{ $txn->votes }}</td>
                     <td class="px-4 py-3 text-right text-sm font-medium">{{ $txn->formatted_amount }}</td>
                     <td class="px-4 py-3 text-center">
-                        <span class="text-xs font-medium {{ in_array($txn->payment_method, ['paystack', 'korapay'], true) ? 'text-primary-600' : 'text-surface-600 dark:text-surface-300' }} inline-flex items-center gap-1">
-                            @if($txn->payment_method === 'paystack')
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                                    <rect x="2" y="5" width="20" height="14" rx="2" />
-                                    <path d="M2 10h20" />
-                                </svg>
-                                {{ $txn->payment_method_label }}
-                            @elseif($txn->payment_method === 'korapay')
+                        <span class="text-xs font-medium {{ $txn->payment_method === 'korapay' ? 'text-primary-600' : 'text-surface-600 dark:text-surface-300' }} inline-flex items-center gap-1">
+                            @if($txn->payment_method === 'korapay')
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                                     <rect x="2" y="5" width="20" height="14" rx="2" />
                                     <path d="M2 10h20" />

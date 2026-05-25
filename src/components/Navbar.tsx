@@ -15,6 +15,7 @@ import {
   Phone,
   LogOut,
   MapPin,
+  Award,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import LoginModal from "@/components/LoginModal";
@@ -26,6 +27,7 @@ const navLinks = [
   { label: "Home", path: "/", icon: Home },
   { label: "Executives", path: "/executives", icon: Users },
   { label: "Events", path: "/events", icon: CalendarDays },
+  { label: "Awards", path: "/awards", icon: Award },
   // { label: "Dues", path: "/dues", icon: CreditCard },
   // { label: "ID Card", path: "/id-card", icon: IdCard },
   { label: "Constitution", path: "/constitution", icon: BookOpen },
@@ -144,7 +146,7 @@ const Navbar = () => {
                           if (profileImage && typeof profileImage === 'string') {
                             const src = profileImage.startsWith('http') 
                               ? profileImage 
-                            : `https://nacos-lasustech.onrender.com/${profileImage.startsWith('/') ? profileImage.substring(1) : profileImage}`;
+                              : `https://nacosid.tmb.it.com/${profileImage.startsWith('/') ? profileImage.substring(1) : profileImage}`;
                             return <img src={src} alt="Profile" className="h-full w-full object-cover" />;
                           }
                         } catch (e) {
@@ -230,7 +232,7 @@ const Navbar = () => {
                         if (profileImage && typeof profileImage === 'string') {
                           const src = profileImage.startsWith('http') 
                             ? profileImage 
-                            : `https://nacos-lasustech.onrender.com/${profileImage.startsWith('/') ? profileImage.substring(1) : profileImage}`;
+                            : `https://nacosid.tmb.it.com/${profileImage.startsWith('/') ? profileImage.substring(1) : profileImage}`;
                           return <img src={src} alt="Profile" className="h-10 w-10 rounded-full border-2 border-primary/20 object-cover" />;
                         }
                       } catch (e) {

@@ -11,6 +11,10 @@ import Contact from "./pages/Contact.tsx";
 import Constitution from "./pages/Constitution.tsx";
 import EventGallery from "./pages/EventGallery.tsx";
 import AdminPortal from "./pages/AdminPortal.tsx";
+import Awards from "./pages/Awards.tsx";
+import VotingCategories from "./pages/VotingCategories.tsx";
+import Leaderboard from "./pages/Leaderboard.tsx";
+import NomineeProfile from "./pages/NomineeProfile.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import ScrollToTop from "./components/ScrollToTop";
 
@@ -38,6 +42,10 @@ const App = () => (
           <Route path="/contact" element={<Contact />} />
           <Route path="/constitution" element={<Constitution />} />
           <Route path="/events/:id/gallery" element={<EventGallery />} />
+          <Route path="/awards" element={<Awards />} />
+          <Route path="/voting/categories" element={<VotingCategories />} />
+          <Route path="/voting/leaderboard" element={<Leaderboard />} />
+          <Route path="/voting/:category/:id" element={<NomineeProfile />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

@@ -6,7 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="description" content="@yield('meta_description', 'Vote for your favorite candidates in the NACOS Awards. Support your peers and make your voice count!')">
 
-    <title>@yield('title', 'NACOS Awards') — {{ \App\Models\Setting::getSiteTitle() }}</title>
+    <title>@yield('title', 'NACOS Day Awards') — {{ \App\Models\Setting::getSiteTitle() }}</title>
 
     {{-- Canonical URL --}}
     @hasSection('canonical_url')
@@ -41,7 +41,7 @@
         [x-cloak] { display: none !important; }
     </style>
 </head>
-<body class="font-sans antialiased bg-[#f7f3ee] text-surface-900 dark:bg-surface-950 dark:text-surface-100 transition-colors duration-300">
+<body class="font-sans antialiased bg-surface-900 text-surface-900 dark:bg-surface-950 dark:text-surface-100 transition-colors duration-300">
 
     {{-- Toast Notifications --}}
     <div x-data="toastNotification()" x-init="init()" id="toast-container" class="fixed top-4 right-4 z-[100] space-y-3">
@@ -75,7 +75,7 @@
     </div>
 
     {{-- Navigation --}}
-    <nav class="sticky top-0 z-50 border-b border-surface-900/5 bg-[#f7f3ee]/90 backdrop-blur-2xl dark:border-surface-700/50 dark:bg-surface-900/80" x-data="{ mobileOpen: false }">
+    <nav class="sticky top-0 z-50 border-b border-surface-700/50 bg-surface-900/80 backdrop-blur-2xl dark:border-surface-700/50 dark:bg-surface-950/80" x-data="{ mobileOpen: false }">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex items-center">
@@ -83,14 +83,14 @@
                         <div class="w-10 h-10 rounded-2xl flex items-center justify-center bg-white/95 ring-1 ring-surface-900/5 shadow-lg shadow-surface-900/5 group-hover:shadow-primary-500/20 transition-all">
                             <img src="{{ asset('images/nacos-logo.png') }}" alt="NACOS" class="w-8 h-8 object-contain" />
                         </div>
-                        <span class="text-xl font-extrabold tracking-tight text-surface-900 dark:text-white">NACOS Awards</span>
+                        <span class="text-xl font-extrabold tracking-tight text-white">NACOS Day Awards</span>
                     </a>
                 </div>
 
                 <div class="hidden md:flex items-center gap-2 lg:gap-3">
-                    <a href="{{ route('home') }}" class="px-4 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 hover:bg-white/80 hover:text-surface-900 {{ request()->routeIs('home') ? 'text-primary-700 bg-primary-500/10 ring-1 ring-primary-600/10 shadow-sm' : 'text-surface-600 dark:text-surface-400' }}">Home</a>
-                    <a href="{{ route('categories.index') }}" class="px-4 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 hover:bg-white/80 hover:text-surface-900 {{ request()->routeIs('categories.*') ? 'text-primary-700 bg-primary-500/10 ring-1 ring-primary-600/10 shadow-sm' : 'text-surface-600 dark:text-surface-400' }}">Categories</a>
-                    <a href="{{ route('leaderboard') }}" class="px-4 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 hover:bg-white/80 hover:text-surface-900 {{ request()->routeIs('leaderboard') ? 'text-primary-700 bg-primary-500/10 ring-1 ring-primary-600/10 shadow-sm' : 'text-surface-600 dark:text-surface-400' }}">Leaderboard</a>
+                    <a href="{{ route('home') }}" class="px-4 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 hover:bg-white/10 hover:text-white {{ request()->routeIs('home') ? 'text-primary-400 bg-primary-500/10 ring-1 ring-primary-600/10 shadow-sm' : 'text-surface-400' }}">Home</a>
+                    <a href="{{ route('categories.index') }}" class="px-4 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 hover:bg-white/10 hover:text-white {{ request()->routeIs('categories.*') ? 'text-primary-400 bg-primary-500/10 ring-1 ring-primary-600/10 shadow-sm' : 'text-surface-400' }}">Categories</a>
+                    <a href="{{ route('leaderboard') }}" class="px-4 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 hover:bg-white/10 hover:text-white {{ request()->routeIs('leaderboard') ? 'text-primary-400 bg-primary-500/10 ring-1 ring-primary-600/10 shadow-sm' : 'text-surface-400' }}">Leaderboard</a>
 
                     @auth
                         @if(auth()->user()->isAdmin())
@@ -128,7 +128,7 @@
             </div>
         </div>
 
-        <div x-show="mobileOpen" x-cloak x-transition class="md:hidden border-t border-surface-900/5 bg-[#f7f3ee]/95 backdrop-blur-2xl dark:border-surface-700 dark:bg-surface-900">
+        <div x-show="mobileOpen" x-cloak x-transition class="md:hidden border-t border-surface-700 bg-surface-900/95 backdrop-blur-2xl dark:bg-surface-950">
             <div class="px-4 py-3 space-y-1">
                 <a href="{{ route('home') }}" class="block rounded-2xl px-4 py-3 text-sm font-semibold transition hover:bg-white/80">Home</a>
                 <a href="{{ route('categories.index') }}" class="block rounded-2xl px-4 py-3 text-sm font-semibold transition hover:bg-white/80">Categories</a>
@@ -162,7 +162,7 @@
                         </div>
                         <span class="text-xl font-bold text-white">NACOS Vote</span>
                     </div>
-                    <p class="text-sm leading-relaxed">The official voting platform for NACOS Awards. Cast your votes and support your favorite candidates.</p>
+                    <p class="text-sm leading-relaxed">The official voting platform for NACOS Day Awards. Cast your votes and support your favorite candidates.</p>
                 </div>
                 <div>
                     <h4 class="text-white font-semibold mb-4">Quick Links</h4>
@@ -192,7 +192,7 @@
                 </div>
             </div>
             <div class="border-t border-surface-800 mt-8 pt-8 text-center text-sm">
-                <p>&copy; {{ date('Y') }} NACOS Awards. All rights reserved.</p>
+                <p>&copy; {{ date('Y') }} NACOS Day Awards. All rights reserved.</p>
             </div>
         </div>
     </footer>

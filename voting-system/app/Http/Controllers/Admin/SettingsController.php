@@ -13,7 +13,7 @@ class SettingsController extends Controller
     public function index()
     {
         $settings = [
-            'site_title' => Setting::get('site_title', 'NACOS Awards'),
+            'site_title' => Setting::get('site_title', 'NACOS Day Awards'),
             'vote_price' => Setting::getVotePriceKobo() / 100, // Display in Naira
             'voting_enabled' => Setting::get('voting_enabled', '1'),
             'event_date' => Setting::get('event_date', ''),
@@ -37,7 +37,7 @@ class SettingsController extends Controller
             'bank_name' => 'nullable|string|max:255',
             'account_number' => 'nullable|string|max:20',
             'account_name' => 'nullable|string|max:255',
-            'payment_provider' => 'required|in:paystack,korapay',
+            'payment_provider' => 'required|in:korapay',
         ]);
 
         Setting::set('site_title', $request->site_title);

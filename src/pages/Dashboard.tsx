@@ -51,6 +51,8 @@ const Dashboard = () => {
   const [amountOwing, setAmountOwing] = useState(2000);
   const [activities, setActivities] = useState<any[]>([]);
   const [payments, setPayments] = useState<any[]>([]);
+  const [adminNotice, setAdminNotice] = useState<any>(null);
+  const [academicSettings, setAcademicSettings] = useState({ session: "", semester: "" });
   
   const mainScrollRef = useRef<HTMLDivElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
@@ -72,7 +74,7 @@ const Dashboard = () => {
     profileImage: null as string | null
   });
 
-  const API_BASE = "https://nacos-lasustech.onrender.com/";
+  const API_BASE = "https://nacosid.tmb.it.com/";
 
 
   const getProfileImage = (img: string | null) => {
@@ -181,6 +183,8 @@ const Dashboard = () => {
         ]);
 
         console.log("🔍 DEBUG: DASH DATA:", dashData);
+        setAdminNotice(dashData?.adminNotice || null);
+        setAcademicSettings(dashData?.academicSettings || { session: "", semester: "" });
 
         // --- AGGRESSIVE ROLE DETECTION ---
         // Look everywhere for 'post' or leadership titles
@@ -448,7 +452,7 @@ const Dashboard = () => {
                   if (rawProfileImage && typeof rawProfileImage === 'string') {
                     const src = rawProfileImage.startsWith('http') 
                       ? rawProfileImage 
-                      : `https://nacos-lasustech.onrender.com/${rawProfileImage.startsWith('/') ? rawProfileImage.substring(1) : rawProfileImage}`;
+                      : `${API_BASE}${rawProfileImage.startsWith('/') ? rawProfileImage.substring(1) : rawProfileImage}`;
                     return <img src={src} className="h-full w-full object-cover" alt="Profile" />;
                   }
                   return (
@@ -586,6 +590,32 @@ const Dashboard = () => {
           className="flex-1 px-6 py-8 md:px-10 md:py-12 pb-24 lg:pb-12 h-screen overflow-y-auto"
         >
           {/* Incomplete Profile Warning */}
+          {adminNotice && (
+            <div className="mb-6 flex flex-col gap-3 rounded-2xl border border-red-200 bg-red-50 p-5 text-red-900">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-100">
+                  <AlertCircle className="h-5 w-5 text-red-600" />
+                </div>
+                <div>
+                  <p className="text-sm font-bold">{String(adminNotice.reason || "Account Notice")}</p>
+                  <p className="text-xs text-red-700">This was added by the admin team and is visible only on your dashboard.</p>
+                </div>
+              </div>
+              <p className="text-sm leading-6 text-red-800">{String(adminNotice.message || "")}</p>
+            </div>
+          )}
+
+          {(academicSettings.session || academicSettings.semester) && (
+            <div className="mb-6 flex flex-col gap-2 rounded-2xl border border-primary/15 bg-primary/5 p-5 text-foreground sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-widest text-primary">Current Academic Session</p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {academicSettings.session || "Session not set"} {academicSettings.semester ? `| ${academicSettings.semester}` : ""}
+                </p>
+              </div>
+            </div>
+          )}
+
           {isProfileIncomplete && (
             <div className="mb-8 flex flex-col gap-4 rounded-2xl border border-amber-200 bg-amber-50 p-6 text-amber-800 animate-reveal sm:flex-row sm:items-center sm:justify-between w-full">
               <div className="flex items-center gap-4">
