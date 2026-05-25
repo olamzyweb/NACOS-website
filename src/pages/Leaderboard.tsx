@@ -213,84 +213,76 @@ const Leaderboard = () => {
 
     return (
       <Layout>
-        <div className="bg-slate-50 min-h-screen pt-32 pb-24 flex items-center justify-center relative overflow-hidden">
+        <div className="bg-slate-50 min-h-screen pt-24 pb-16 flex items-center justify-center relative overflow-hidden">
           {/* Beautiful glowing backdrops */}
-          <div className="absolute inset-0 opacity-20 pointer-events-none">
-            <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-emerald-500 rounded-full blur-[140px] animate-pulse" />
-            <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-primary rounded-full blur-[140px] animate-pulse" />
+          <div className="absolute inset-0 opacity-15 pointer-events-none">
+            <div className="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-emerald-500 rounded-full blur-[120px] animate-pulse" />
+            <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-primary rounded-full blur-[120px] animate-pulse" />
           </div>
 
-          <div className="container max-w-xl px-4 relative z-10">
+          <div className="container max-w-md px-4 relative z-10">
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              initial={{ opacity: 0, scale: 0.96, y: 15 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              className="bg-white rounded-[2.5rem] border border-slate-200 shadow-2xl p-8 sm:p-10 text-center relative overflow-hidden"
+              className="bg-white rounded-3xl border border-slate-200 shadow-2xl p-6 sm:p-8 text-center relative overflow-hidden"
             >
-              {/* Confetti-like Sparkle Details */}
-              <div className="absolute top-6 left-6 text-emerald-400 opacity-40">
-                <Sparkles className="h-6 w-6" />
-              </div>
-              <div className="absolute bottom-6 right-6 text-primary opacity-40">
-                <Sparkles className="h-6 w-6" />
-              </div>
-
               {/* Animated Success Checkmark Ring */}
-              <div className="flex justify-center mb-6">
+              <div className="flex justify-center mb-4">
                 <motion.div 
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ type: "spring", stiffness: 200, damping: 15 }}
-                  className="h-20 w-20 rounded-full bg-emerald-50 border border-emerald-150 flex items-center justify-center shadow-lg shadow-emerald-100"
+                  className="h-16 w-16 rounded-full bg-emerald-50 border border-emerald-150 flex items-center justify-center shadow-md shadow-emerald-100/50"
                 >
-                  <CheckCircle2 className="h-10 w-10 text-emerald-650" />
+                  <CheckCircle2 className="h-8 w-8 text-emerald-650" />
                 </motion.div>
               </div>
 
               {/* Title & Appreciation message */}
-              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 bg-emerald-50 border border-emerald-100 px-3 py-1 rounded-full">
+              <span className="text-[9px] font-black uppercase tracking-[0.25em] text-emerald-600 bg-emerald-50 border border-emerald-100 px-2.5 py-0.5 rounded-full">
                 Vote Successful
               </span>
               
-              <h1 className="mt-6 font-display text-3xl sm:text-4xl font-black text-slate-900 leading-tight">
-                Thank You For <br className="hidden sm:inline" />Your Support!
+              <h1 className="mt-4 font-display text-2xl sm:text-3xl font-black text-slate-900 leading-tight">
+                Thank You For Your Support!
               </h1>
               
-              <p className="mt-4 text-sm text-slate-500 max-w-sm mx-auto leading-relaxed">
+              <p className="mt-2.5 text-xs text-slate-500 max-w-xs mx-auto leading-relaxed">
                 Your payment was successfully confirmed and your votes have been counted in the live standings.
               </p>
 
               {/* Nominee Receipt card */}
-              <div className="my-8 p-6 rounded-2xl bg-slate-50 border border-slate-200 text-left space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-                    <Heart className="h-5 w-5 fill-current text-primary" />
+              <div className="my-6 p-4 rounded-xl bg-slate-50 border border-slate-200 text-left space-y-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                    <Heart className="h-4 w-4 fill-current text-primary" />
                   </div>
                   <div>
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-sans">Nominee Supported</p>
-                    <p className="font-bold text-slate-800 text-sm">{nomineeName}</p>
+                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider font-sans">Nominee Supported</p>
+                    <p className="font-bold text-slate-800 text-xs">{nomineeName}</p>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 border-t border-slate-200/60 pt-4 font-mono text-xs">
+                <div className="grid grid-cols-2 gap-3 border-t border-slate-200/60 pt-3 font-mono text-xs">
                   <div>
-                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider font-sans">Votes Cast</p>
-                    <p className="font-bold text-slate-800 text-sm mt-0.5">{votesCount} votes</p>
+                    <p className="text-[8px] font-bold text-slate-400 uppercase tracking-wider font-sans">Votes Cast</p>
+                    <p className="font-bold text-slate-800 text-xs mt-0.5">{votesCount} votes</p>
                   </div>
                   <div>
-                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider font-sans">Amount Paid</p>
-                    <p className="font-bold text-emerald-800 text-sm mt-0.5">₦{Number(amountPaid).toLocaleString()}</p>
+                    <p className="text-[8px] font-bold text-slate-400 uppercase tracking-wider font-sans">Amount Paid</p>
+                    <p className="font-bold text-emerald-800 text-xs mt-0.5">₦{Number(amountPaid).toLocaleString()}</p>
                   </div>
                 </div>
               </div>
 
               {/* Roll countdown animation */}
-              <div className="mb-8 space-y-2.5">
-                <div className="flex justify-between text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+              <div className="mb-6 space-y-2">
+                <div className="flex justify-between text-[9px] text-slate-400 font-bold uppercase tracking-wider">
                   <span>Redirecting to Leaderboard</span>
                   <span>{countdown}s</span>
                 </div>
                 {/* Horizontal depleted progress bar */}
-                <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                <div className="w-full bg-slate-100 h-1 rounded-full overflow-hidden">
                   <motion.div 
                     initial={{ width: "100%" }}
                     animate={{ width: "0%" }}
@@ -301,19 +293,19 @@ const Leaderboard = () => {
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row gap-3">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <Link
                   to="/voting/categories"
-                  className="flex-1 inline-flex items-center justify-center gap-1.5 h-12 rounded-full border border-slate-250 bg-white text-slate-700 font-black text-sm hover:bg-slate-50 transition active:scale-95 duration-100 font-bold"
+                  className="flex-1 inline-flex items-center justify-center gap-1.5 h-10 rounded-xl border border-slate-250 bg-white text-slate-700 font-black text-xs hover:bg-slate-50 transition active:scale-95 duration-100 font-bold"
                 >
-                  <Vote className="h-4 w-4" />
+                  <Vote className="h-3.5 w-3.5" />
                   Vote Again
                 </Link>
                 <button
                   onClick={handleViewStandings}
-                  className="flex-1 inline-flex items-center justify-center gap-1.5 h-12 rounded-full bg-slate-900 text-white font-black text-sm hover:bg-slate-800 transition active:scale-95 duration-100 shadow-lg shadow-slate-900/10 font-bold"
+                  className="flex-1 inline-flex items-center justify-center gap-1.5 h-10 rounded-xl bg-slate-900 text-white font-black text-xs hover:bg-slate-800 transition active:scale-95 duration-100 shadow-md shadow-slate-900/10 font-bold"
                 >
-                  <BarChart2 className="h-4 w-4" />
+                  <BarChart2 className="h-3.5 w-3.5" />
                   View Leaderboard
                 </button>
               </div>
@@ -323,6 +315,7 @@ const Leaderboard = () => {
       </Layout>
     );
   }
+
 
   return (
     <Layout>
