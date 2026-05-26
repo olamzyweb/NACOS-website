@@ -299,6 +299,22 @@ const getCategoryFlyer = (slug: string) => {
     normalized = "male_footballer_of_the_year";
   } else if (normalized === "best_lecturer_of_the_year" || normalized === "lecturer_of_the_year") {
     normalized = "lecturer_of_the_year";
+  } else if (normalized === "best_tech_content_creator" || normalized === "tech_content_creator_of_the_year" || normalized === "tech_content_creator") {
+    normalized = "tech_content_creator_of_the_year";
+  } else if (normalized === "most_popular_student" || normalized === "most_popular_student_of_the_year") {
+    normalized = "most_popular_student_of_the_year";
+  } else if (normalized === "best_team_player" || normalized === "team_player") {
+    normalized = "best_team_player";
+  } else if (normalized === "fashion_icon_of_the_year" || normalized === "fashion_icon_of_the_department" || normalized === "fashion_icon") {
+    normalized = "fashion_icon_of_the_year";
+  } else if (normalized === "mr_money_of_the_year" || normalized === "mr_money") {
+    normalized = "mr_money_of_the_year";
+  } else if (normalized === "social_influencer_of_the_year" || normalized === "social_influencer") {
+    normalized = "social_influencer_of_the_year";
+  } else if (normalized === "social_personality_of_the_year" || normalized === "social_personality") {
+    normalized = "social_personality_of_the_year";
+  } else if (normalized === "content_creator_of_the_year" || normalized === "content_creator") {
+    normalized = "content_creator_of_the_year";
   }
  
    try {
