@@ -66,18 +66,18 @@ const Footer = () => {
         <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
           {/* Brand */}
           <div className="text-black">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3.5">
               <a 
                 href="https://nacos.org.ng" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 title="NACOS NATIONAL"
-                className="transition-opacity hover:opacity-80"
+                className="flex h-12 w-12 items-center justify-center rounded-full bg-white p-1.5 border border-white/20 transition-all hover:opacity-90 hover:scale-105 shadow-md shrink-0"
               >
                 <img
                   src={nacosLogo}
                   alt="NACOS NATIONAL"
-                  className="h-12 w-auto object-contain"
+                  className="h-full w-auto object-contain"
                 />
               </a>
 
@@ -86,12 +86,12 @@ const Footer = () => {
                 target="_blank" 
                 rel="noopener noreferrer"
                 title="LASUSTECH"
-                className="transition-opacity hover:opacity-80"
+                className="flex h-12 w-12 items-center justify-center rounded-full bg-white p-1.5 border border-white/20 transition-all hover:opacity-90 hover:scale-105 shadow-md shrink-0"
               >
                 <img
                   src={lasustechLogo}
                   alt="LASUSTECH"
-                  className="h-11 w-auto object-contain"
+                  className="h-full w-auto object-contain"
                 />
               </a>
 
