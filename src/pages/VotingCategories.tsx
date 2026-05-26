@@ -281,16 +281,33 @@ const getCategoryFlyer = (slug: string) => {
     normalized = "executive_of_the_year";
   } else if (normalized === "most_outstanding_leader_of_the_year" || normalized === "most_outstanding_leader") {
     normalized = "most_outstanding_leader_of_the_year";
-  } else if (normalized === "student_founder_of_the_year" || normalized === "ceo_of_the_year" || normalized === "tech_entrepreneur_student_founder") {
+  } else if (normalized === "student_founder_of_the_year" || normalized === "tech_entrepreneur_student_founder") {
     normalized = "student_founder_of_the_year";
+  } else if (normalized === "ceo_of_the_year" || normalized === "ceo_of_the_year") {
+    normalized = "ceo_of_the_year";
+  } else if (normalized === "artist_of_the_year" || normalized === "best_artist_of_the_year") {
+    normalized = "artist_of_the_year";
+  } else if (normalized === "best_brand_of_the_year" || normalized === "brand_of_the_year") {
+    normalized = "brand_of_the_year";
+  } else if (normalized === "best_female_footballer_of_the_year" || normalized === "female_footballer_of_the_year") {
+    normalized = "female_footballer_of_the_year";
+  } else if (normalized === "best_football_team_of_the_year" || normalized === "football_team_of_the_year") {
+    normalized = "football_team_of_the_year";
+  } else if (normalized === "fx_trader_of_the_year" || normalized === "fx_trader") {
+    normalized = "fx_trader_of_the_year";
+  } else if (normalized === "best_male_footballer_of_the_year" || normalized === "male_footballer_of_the_year") {
+    normalized = "male_footballer_of_the_year";
+  } else if (normalized === "best_lecturer_of_the_year" || normalized === "lecturer_of_the_year") {
+    normalized = "lecturer_of_the_year";
   }
+ 
+   try {
+     return new URL(`../assets/voting/${normalized}.JPG`, import.meta.url).href;
+   } catch (e) {
+     return "/placeholder.svg";
+   }
+ };
 
-  try {
-    return new URL(`../assets/voting/${normalized}.JPG`, import.meta.url).href;
-  } catch (e) {
-    return "/placeholder.svg";
-  }
-};
 
 const VotingCategories = () => {
   const [view, setView] = useState<View>("groups");

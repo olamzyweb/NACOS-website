@@ -30,8 +30,9 @@ class KorapayService {
             name: data.full_name || 'NACOS Student'
           },
           notification_url: `${process.env.BACKEND_URL || 'http://localhost:5000'}/api/payments/webhook`,
-          redirect_url: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/dashboard`,
+          redirect_url: `${process.env.FRONTEND_URL || 'http://localhost:8080'}/dashboard`,
           metadata: data.metadata || {}
+
         },
         {
           headers: {
