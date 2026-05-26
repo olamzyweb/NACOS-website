@@ -66,13 +66,13 @@ const Footer = () => {
         <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
           {/* Brand */}
           <div className="text-black">
-            <div className="flex items-center gap-3.5">
+            <div className="flex items-center gap-3">
               <a 
                 href="https://nacos.org.ng" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 title="NACOS NATIONAL"
-                className="flex h-12 w-12 items-center justify-center rounded-full bg-white p-1.5 border border-white/20 transition-all hover:opacity-90 hover:scale-105 shadow-md shrink-0"
+                className="flex h-12 w-12 items-center justify-center rounded-full bg-white p-1 border border-white/20 transition-all hover:opacity-90 hover:scale-105 shadow-md shrink-0"
               >
                 <img
                   src={nacosLogo}
@@ -86,7 +86,7 @@ const Footer = () => {
                 target="_blank" 
                 rel="noopener noreferrer"
                 title="LASUSTECH"
-                className="flex h-12 w-12 items-center justify-center rounded-full bg-white p-1.5 border border-white/20 transition-all hover:opacity-90 hover:scale-105 shadow-md shrink-0"
+                className="flex h-12 w-12 items-center justify-center rounded-full bg-white p-1 border border-white/20 transition-all hover:opacity-90 hover:scale-105 shadow-md shrink-0"
               >
                 <img
                   src={lasustechLogo}
@@ -96,10 +96,10 @@ const Footer = () => {
               </a>
 
               <Link to="/" className="ml-1 hidden flex-col leading-tight sm:flex cursor-pointer">
-                <span className="font-display text-white font-bold tracking-tight text-foreground">
+                <span className="font-display text-white font-bold tracking-tight text-foreground whitespace-nowrap">
                   NACOS LASUSTECH
                 </span>
-                <span className="text-[11px] font-medium text-muted-foreground">
+                <span className="text-[11px] font-medium text-muted-foreground whitespace-nowrap">
                   Chapter
                 </span>
               </Link>
