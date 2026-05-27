@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Layout from "@/components/Layout";
-import { Heart, Send, Sparkles, HelpCircle, CheckCircle } from "lucide-react";
+import { Heart, Send, HelpCircle, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { fetchApi } from "@/lib/api";
@@ -83,8 +83,7 @@ const Donate = () => {
             
             {/* Left: Info + Envelope Illustration */}
             <div className="flex flex-col text-center md:text-left">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-black uppercase tracking-wider mb-6 w-fit mx-auto md:mx-0">
-                <Sparkles className="h-3.5 w-3.5" />
+              <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-black uppercase tracking-wider mb-6 w-fit mx-auto md:mx-0">
                 Support Our Vision
               </div>
 
