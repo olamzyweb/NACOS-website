@@ -5,6 +5,9 @@ import morgan from 'morgan';
 import dotenv from 'dotenv';
 import rateLimit from 'express-rate-limit';
 import axios from 'axios';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
 import paymentRoutes from './routes/payment.routes.js';
 import authRoutes from './routes/auth.routes.js';
 import adminAuthRoutes from './routes/admin-auth.routes.js';
@@ -15,97 +18,121 @@ import contactRoutes from './routes/contact.routes.js';
 import adminRoutes from './routes/admin.routes.js';
 import BirthdayService from './services/birthday.service.js';
 
-
-// Pulling in our environment variables
+// Load environment variables
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Trust the Render proxy to allow express-rate-limit to see the real user IP
+// __dirname equivalent for ES Modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Trust the proxy (Render / Vercel / cPanel)
 app.set('trust proxy', 1);
 
 /**
- * SECURITY RATE LIMITING
+ * ALLOWED ORIGINS
  * ---------------------------------------------------------
- * Stops attackers from spamming our API or brute-forcing logins.
+ * Accepts requests from all our known frontend domains.
+ */
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'https://nacoslasustech.org.ng',
+  'https://www.nacoslasustech.org.ng',
+  'https://awards.nacoslasustech.org.ng',
+  process.env.FRONTEND_URL,
+].filter(Boolean);
+
+app.use(cors({
+  origin: (origin, callback) => {
+    // Allow requests with no origin (mobile apps, curl, Postman)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    return callback(new Error(`CORS policy: origin ${origin} not allowed.`));
+  },
+  credentials: true,
+}));
+
+/**
+ * SECURITY & MIDDLEWARE
  */
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
+  windowMs: 15 * 60 * 1000,
+  max: 100,
   message: 'Too many requests from this IP, please try again after 15 minutes.'
 });
 
 const authLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hour
-  max: 10, // Limit each IP to 10 login attempts per hour
+  windowMs: 60 * 60 * 1000,
+  max: 10,
   message: 'Too many login attempts. Take a break and try again later.'
 });
 
+app.use(helmet({ crossOriginResourcePolicy: false }));
+app.use(express.json({ limit: '10kb' }));
+app.use(morgan('dev'));
+app.use(limiter);
+
 /**
- * MIDDLEWARE SETUP
+ * STATIC FILES
  * ---------------------------------------------------------
- * We want this to be secure and readable. 
- * Helmet helps with basic security headers, 
- * Morgan logs our requests so we know what's happening.
+ * Serves uploaded images. Note: on Vercel's serverless
+ * environment, uploads are ephemeral (/tmp). For persistent
+ * file storage in production, migrate to Cloudinary or S3.
  */
-app.use(helmet({ crossOriginResourcePolicy: false })); // Stay safe out there, but let images load!
-app.use(cors());   // Allow our frontend to talk to us
-app.use(express.json({ limit: '10kb' })); // Security: Limit JSON body size to prevent DoS
-app.use(morgan('dev'));  // Log requests to the console
-app.use(limiter); // Apply general rate limit to all requests
+const uploadsPath = process.env.VERCEL
+  ? '/tmp/uploads'
+  : path.join(__dirname, 'uploads');
 
-// Start Birthday Service (Daily checks)
-BirthdayService.start();
+app.use('/uploads', express.static(uploadsPath));
 
-// Root route for health checks (prevents 404 on Render/deployment pings)
-app.get('/', (req, res) => {
-  res.status(200).send('NACOS LASUSTECH API is running.');
+/**
+ * ROUTES
+ */
+app.get('/', (_req, res) => {
+  res.status(200).json({
+    message: 'NACOS LASUSTECH API is running.',
+    version: '1.0.0',
+    timestamp: new Date().toISOString(),
+  });
 });
 
-/**
- * THE CORE ROUTES
- * ---------------------------------------------------------
- * I'll keep these clean. We'll eventually move these into a 
- * separate routes folder once the project grows.
- */
-
-// Registering modular routes
-app.use('/api/auth', authLimiter, authRoutes);
-app.use('/api/admin-auth', authLimiter, adminAuthRoutes);
-app.use('/api/student', studentRoutes);
-app.use('/api/content', contentRoutes);
-app.use('/api/services', servicesRoutes);
-app.use('/api/contact', contactRoutes);
-app.use('/api/admin', adminRoutes);
-app.use('/api/payments', paymentRoutes);
-
-// Serve uploads folder statically
-import path from 'path';
-import { fileURLToPath } from 'url';
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
-// A simple health check to make sure the lights are on
-app.get('/api/health', (req, res) => {
-  res.json({ 
-    status: 'up', 
+app.get('/api/health', (_req, res) => {
+  res.json({
+    status: 'up',
     timestamp: new Date().toISOString(),
-    message: 'NACOS LASUSTECH Backend is humming along nicely.'
+    message: 'NACOS LASUSTECH Backend is humming along nicely.',
+    environment: process.env.NODE_ENV || 'development',
   });
+});
+
+// Vercel Cron Job endpoint — called daily at 07:00 UTC
+// Configured in vercel.json: "0 7 * * *"
+app.get('/api/cron/birthday', async (req, res) => {
+  // Secure the cron endpoint so only Vercel can call it
+  const cronSecret = req.headers['authorization'];
+  if (process.env.NODE_ENV === 'production' && cronSecret !== `Bearer ${process.env.CRON_SECRET}`) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+  try {
+    await BirthdayService.checkBirthdays();
+    res.json({ success: true, message: 'Birthday check completed.' });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
 });
 
 // Diagnostic Ping to Central System
 app.get('/api/ping-central', async (req, res) => {
   try {
     const start = Date.now();
-    // Using POST because we know the server responds to POST
-    const response = await axios.post('https://nacosid.tmb.it.com/api.php?action=login', 
+    const response = await axios.post('https://nacosid.tmb.it.com/api.php?action=login',
       { matric_number: '000', password: '000' },
       {
         timeout: 5000,
-        headers: { 
+        headers: {
           'X-API-KEY': process.env.ID_SYSTEM_API_KEY || 'NACOS_LASUSTECH_SECURE_API_KEY',
           'Content-Type': 'application/json'
         }
@@ -126,27 +153,47 @@ app.get('/api/ping-central', async (req, res) => {
   }
 });
 
+// Register all API routes
+app.use('/api/auth', authLimiter, authRoutes);
+app.use('/api/admin-auth', authLimiter, adminAuthRoutes);
+app.use('/api/student', studentRoutes);
+app.use('/api/content', contentRoutes);
+app.use('/api/services', servicesRoutes);
+app.use('/api/contact', contactRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/payments', paymentRoutes);
+
 /**
- * ERROR HANDLING
- * ---------------------------------------------------------
- * Every good backend engineer knows that things WILL go wrong.
- * Let's catch those errors gracefully so the server doesn't crash.
+ * GLOBAL ERROR HANDLER
  */
-app.use((err, req, res, next) => {
+app.use((err, req, res, _next) => {
   console.error('🔥 CRITICAL ERROR:', err.stack);
-  res.status(500).json({ 
+  res.status(500).json({
     error: 'Internal Server Error',
-    message: 'Something went sideways on our end. We are looking into it!' 
+    message: 'Something went sideways on our end. We are looking into it!'
   });
 });
 
-// Fire it up!
-app.listen(PORT, () => {
-  console.log(`
+/**
+ * SERVER STARTUP
+ * ---------------------------------------------------------
+ * On Vercel, the app is exported as a serverless function.
+ * app.listen() is only called in local/cPanel environments.
+ */
+if (!process.env.VERCEL) {
+  // Run birthday check once on startup (for cPanel / local)
+  BirthdayService.start();
+
+  app.listen(PORT, () => {
+    console.log(`
   --------------------------------------------------
   ✨ NACOS LASUSTECH Backend Started
   🌍 Server: http://localhost:${PORT}
   🛠️  Mode: ${process.env.NODE_ENV || 'development'}
   --------------------------------------------------
-  `);
-});
+    `);
+  });
+}
+
+// Export for Vercel serverless
+export default app;
