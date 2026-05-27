@@ -8,12 +8,20 @@ const API_KEY = process.env.ID_SYSTEM_API_KEY || 'NACOS_LASUSTECH_SECURE_API_KEY
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const STORE_DIR = path.join(__dirname, '../data');
+// On Vercel, filesystem is read-only except /tmp. Data won't persist
+// between invocations on Vercel — defaults will be used each time.
+const STORE_DIR = process.env.VERCEL
+  ? '/tmp/data'
+  : path.join(__dirname, '../data');
 const STORE_FILE = path.join(STORE_DIR, 'admin_store.json');
 
-// Ensure local store directory exists
-if (!fs.existsSync(STORE_DIR)) {
-  fs.mkdirSync(STORE_DIR, { recursive: true });
+// Ensure local store directory exists (safe on all environments)
+try {
+  if (!fs.existsSync(STORE_DIR)) {
+    fs.mkdirSync(STORE_DIR, { recursive: true });
+  }
+} catch (_err) {
+  console.warn('⚠️  Could not create data store directory:', _err.message);
 }
 
 /* ==========================================
