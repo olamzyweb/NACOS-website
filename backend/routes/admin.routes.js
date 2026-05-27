@@ -331,19 +331,26 @@ router.get('/messages', async (_req, res) => {
 });
 
 // Configure disk storage for uploads
+// On Vercel, the filesystem is read-only — use /tmp instead.
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const UPLOADS_DIR = path.join(__dirname, '../uploads');
+const UPLOADS_DIR = process.env.VERCEL
+  ? '/tmp/uploads'
+  : path.join(__dirname, '../uploads');
 
-if (!fs.existsSync(UPLOADS_DIR)) {
-  fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+try {
+  if (!fs.existsSync(UPLOADS_DIR)) {
+    fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+  }
+} catch (_err) {
+  console.warn('⚠️  Could not create uploads directory:', _err.message);
 }
 
 const diskStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
+  destination: (_req, file, cb) => {
     cb(null, UPLOADS_DIR);
   },
-  filename: (req, file, cb) => {
+  filename: (_req, file, cb) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
     const ext = path.extname(file.originalname);
     cb(null, 'img-' + uniqueSuffix + ext);
@@ -359,6 +366,8 @@ router.post('/upload', diskUpload.single('image'), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: 'No file uploaded' });
   }
+  // On Vercel, files go to /tmp and are not publicly served.
+  // For persistent storage, integrate Cloudinary or similar.
   const relativePath = 'uploads/' + req.file.filename;
   res.json({ status: 'success', path: relativePath });
 });
