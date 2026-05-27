@@ -14,6 +14,26 @@ const API_KEY = process.env.ID_SYSTEM_API_KEY || 'NACOS_LASUSTECH_SECURE_API_KEY
  * Handling the money flow via Korapay and syncing to Central System. 
  */
 
+// Kick off a donation (Public - no protect middleware)
+router.post('/donate', async (req, res) => {
+  const { email, amount, full_name } = req.body;
+
+  try {
+    const reference = `DONATE-${Date.now()}`;
+    const paymentData = await KorapayService.initializeTransaction({
+      email,
+      amount,
+      reference,
+      full_name: full_name || 'Anonymous Donor',
+      metadata: { type: 'donation' }
+    });
+
+    res.json(paymentData);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 // Kick off a payment
 router.post('/initialize', protect, async (req, res) => {
   const { email, amount, payment_type } = req.body;

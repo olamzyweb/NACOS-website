@@ -16,23 +16,28 @@ import {
   LogOut,
   MapPin,
   Award,
+  Heart,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import LoginModal from "@/components/LoginModal";
+import { isAwardsHost } from "@/lib/api";
 
 import nacosLogo from "@/assets/nacos_logo.png";
 import lasustechLogo from "@/assets/lasustech_logo.png";
 
-const navLinks = [
-  { label: "Home", path: "/", icon: Home },
-  { label: "Executives", path: "/executives", icon: Users },
-  { label: "Events", path: "/events", icon: CalendarDays },
-  { label: "Awards", path: "/awards", icon: Award },
-  // { label: "Dues", path: "/dues", icon: CreditCard },
-  // { label: "ID Card", path: "/id-card", icon: IdCard },
-  { label: "Constitution", path: "/constitution", icon: BookOpen },
-  { label: "Contact", path: "/contact", icon: Phone },
-];
+const getNavLinks = () => {
+  if (isAwardsHost()) {
+    return [];
+  }
+  return [
+    { label: "Home", path: "/", icon: Home },
+    { label: "Executives", path: "/executives", icon: Users },
+    { label: "Events", path: "/events", icon: CalendarDays },
+    { label: "Donate", path: "/donate", icon: Heart },
+    { label: "Constitution", path: "/constitution", icon: BookOpen },
+    { label: "Contact", path: "/contact", icon: Phone },
+  ];
+};
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -105,31 +110,40 @@ const Navbar = () => {
             </div>
 
             {/* Desktop Nav */}
-            <div className="hidden items-center rounded-full border border-border/70 bg-background/80 p-1 lg:flex">
-              {navLinks.map((link) => {
-                const isActive = location.pathname === link.path;
-                const Icon = link.icon;
+            {!isAwardsHost() && (
+              <div className="hidden items-center rounded-full border border-border/70 bg-background/80 p-1 lg:flex">
+                {getNavLinks().map((link) => {
+                  const isActive = location.pathname === link.path;
+                  const Icon = link.icon;
 
-                return (
-                  <Link
-                    key={link.path}
-                    to={link.path}
-                    className={`flex items-center gap-2 rounded-full px-4 py-2 text-[13px] font-medium transition ${
-                      isActive
-                        ? "bg-accent text-foreground shadow-sm"
-                        : "text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    <Icon className="h-3.5 w-3.5" />
-                    {link.label}
-                  </Link>
-                );
-              })}
-            </div>
+                  return (
+                    <Link
+                      key={link.path}
+                      to={link.path}
+                      className={`flex items-center gap-2 rounded-full px-4 py-2 text-[13px] font-medium transition ${
+                        isActive
+                          ? "bg-accent text-foreground shadow-sm"
+                          : "text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      <Icon className="h-3.5 w-3.5" />
+                      {link.label}
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
 
             {/* Right */}
             <div className="flex items-center gap-2">
-              {localStorage.getItem("isLoggedIn") === "true" ? (
+              {isAwardsHost() ? (
+                <a
+                  href="https://nacoslasustech.org.ng"
+                  className="hidden h-10 items-center justify-center gap-2 rounded-full bg-[#1F5FAF] px-5 text-xs font-black text-white hover:bg-[#184d90] sm:inline-flex"
+                >
+                  Visit Website
+                </a>
+              ) : localStorage.getItem("isLoggedIn") === "true" ? (
                 <div className="flex items-center gap-3">
                   <div className="relative group profile-menu-container">
                     <button 
@@ -288,7 +302,7 @@ const Navbar = () => {
             </div>
 
             <div className="mt-8 grid gap-2">
-              {navLinks.map((link, i) => {
+              {getNavLinks().map((link, i) => {
                 const isActive = location.pathname === link.path;
                 const Icon = link.icon;
 
@@ -320,7 +334,14 @@ const Navbar = () => {
             <div className={`mt-8 pt-6 border-t border-border/50 transition-all duration-500 delay-300 ${
               mobileOpen ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
             }`}>
-              {localStorage.getItem("isLoggedIn") === "true" ? (
+              {isAwardsHost() ? (
+                <a
+                  href="https://nacoslasustech.org.ng"
+                  className="flex h-14 w-full items-center justify-center gap-3 rounded-2xl bg-[#1F5FAF] text-base font-bold text-white shadow-xl shadow-blue-500/20 hover:bg-[#184d90]"
+                >
+                  Visit Main Website
+                </a>
+              ) : localStorage.getItem("isLoggedIn") === "true" ? (
                 <Button
                   onClick={() => {
                     localStorage.removeItem("isLoggedIn");

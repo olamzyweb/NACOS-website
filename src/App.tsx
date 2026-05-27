@@ -16,43 +16,50 @@ import VotingCategories from "./pages/VotingCategories.tsx";
 import Leaderboard from "./pages/Leaderboard.tsx";
 import NomineeProfile from "./pages/NomineeProfile.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import Donate from "./pages/Donate.tsx";
 import ScrollToTop from "./components/ScrollToTop";
+import { isAwardsHost } from "@/lib/api";
 
 import ErrorBoundary from "./components/ErrorBoundary";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-        <ScrollToTop />
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/executives" element={<Executives />} />
-          <Route path="/events" element={<Events />} />
-          <Route path="/dashboard" element={
-            <ErrorBoundary>
-              <Dashboard />
-            </ErrorBoundary>
-          } />
-          <Route path="/admin" element={<AdminPortal />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/constitution" element={<Constitution />} />
-          <Route path="/events/:id/gallery" element={<EventGallery />} />
-          <Route path="/awards" element={<Awards />} />
-          <Route path="/voting/categories" element={<VotingCategories />} />
-          <Route path="/voting/leaderboard" element={<Leaderboard />} />
-          <Route path="/voting/:category/:id" element={<NomineeProfile />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
-
-
+const App = () => {
+  const awardsMode = isAwardsHost();
+  
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+          <ScrollToTop />
+          <Routes>
+            <Route path="/" element={awardsMode ? <Awards /> : <Index />} />
+            <Route path="/executives" element={awardsMode ? <NotFound /> : <Executives />} />
+            <Route path="/events" element={awardsMode ? <NotFound /> : <Events />} />
+            <Route path="/dashboard" element={
+              awardsMode ? <NotFound /> : (
+                <ErrorBoundary>
+                  <Dashboard />
+                </ErrorBoundary>
+              )
+            } />
+            <Route path="/admin" element={<AdminPortal />} />
+            <Route path="/contact" element={awardsMode ? <NotFound /> : <Contact />} />
+            <Route path="/constitution" element={awardsMode ? <NotFound /> : <Constitution />} />
+            <Route path="/events/:id/gallery" element={awardsMode ? <NotFound /> : <EventGallery />} />
+            <Route path="/awards" element={<Awards />} />
+            <Route path="/voting/categories" element={<VotingCategories />} />
+            <Route path="/voting/leaderboard" element={<Leaderboard />} />
+            <Route path="/voting/:category/:id" element={<NomineeProfile />} />
+            <Route path="/donate" element={awardsMode ? <NotFound /> : <Donate />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;
