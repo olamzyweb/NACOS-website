@@ -18,6 +18,7 @@ import NomineeProfile from "./pages/NomineeProfile.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import Donate from "./pages/Donate.tsx";
 import ScrollToTop from "./components/ScrollToTop";
+import ScrollToTopButton from "./components/ScrollToTopButton";
 import { isAwardsHost } from "@/lib/api";
 
 import ErrorBoundary from "./components/ErrorBoundary";
@@ -56,6 +57,7 @@ const App = () => {
             <Route path="/donate" element={awardsMode ? <NotFound /> : <Donate />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
+          <ScrollToTopButton />
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>

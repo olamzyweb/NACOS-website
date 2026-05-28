@@ -29,7 +29,15 @@ if (!empty($id)) {
             $nominee = $data['nominee'];
             $nomineeName = isset($nominee['name']) ? $nominee['name'] : $nomineeName;
             $categoryName = isset($nominee['categoryName']) ? $nominee['categoryName'] : (isset($nominee['category']) ? $nominee['category'] : $categoryName);
-            $nomineeBio = "Vote for " . $nomineeName . " contesting for \"" . $categoryName . "\".";
+            
+            // Format the specific text requested by user
+            $nomineeBio = "Vote for " . $nomineeName . " contesting for \"" . $categoryName . "\".&#10;&#10;" . 
+                          "5 Votes = ₦500&#10;" . 
+                          "10 Votes = ₦1,000&#10;" . 
+                          "50 Votes = ₦5,000&#10;" . 
+                          "100 Votes = ₦10,000&#10;&#10;" . 
+                          "Your support will be highly appreciated, and God bless you as you do so!&#10;" . 
+                          "Vote here: ";
             
             // Resolve photo URL (cPanel persistent uploads)
             $photo = isset($nominee['photo']) ? $nominee['photo'] : '';
@@ -40,6 +48,8 @@ if (!empty($id)) {
                     $protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? "https" : "http";
                     $photoUrl = $protocol . "://" . $_SERVER['HTTP_HOST'] . "/" . ltrim($photo, '/');
                 }
+                // Encode spaces in URL to ensure social scrapers don't break
+                $photoUrl = str_replace(' ', '%20', $photoUrl);
             }
         }
     }
@@ -50,9 +60,16 @@ $htmlFile = __DIR__ . '/index.html';
 if (file_exists($htmlFile)) {
     $html = file_get_contents($htmlFile);
     
-    // Define dynamic values
+    $protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? "https" : "http";
+    $url = $protocol . "://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+    
+    // Append the URL to the bio
+    $description = $nomineeBio;
+    if (strpos($description, "Vote here: ") !== false) {
+        $description .= $url;
+    }
+    
     $title = "Vote for " . htmlspecialchars($nomineeName) . " | NACOS Awards";
-    $description = htmlspecialchars($nomineeBio);
     $image = htmlspecialchars($photoUrl);
     
     // Replace <title>
@@ -65,7 +82,8 @@ if (file_exists($htmlFile)) {
     // Replace Open Graph Tags
     $html = preg_replace('/<meta property="og:title" content="(.*?)"/is', '<meta property="og:title" content="' . $title . '"', $html);
     $html = preg_replace('/<meta property="og:description" content="(.*?)"/is', '<meta property="og:description" content="' . $description . '"', $html);
-    $html = preg_replace('/<meta property="og:image" content="(.*?)"/is', '<meta property="og:image" content="' . $image . '"', $html);
+    // Include the image tags and explicitly set size to force social platforms to preview
+    $html = preg_replace('/<meta property="og:image" content="(.*?)"/is', '<meta property="og:image" content="' . $image . '" />' . "\n    " . '<meta property="og:image:width" content="1200" />' . "\n    " . '<meta property="og:image:height" content="630"', $html);
     
     // Replace Twitter Tags
     $html = preg_replace('/<meta name="twitter:title" content="(.*?)"/is', '<meta name="twitter:title" content="' . $title . '"', $html);
@@ -73,8 +91,6 @@ if (file_exists($htmlFile)) {
     $html = preg_replace('/<meta name="twitter:image" content="(.*?)"/is', '<meta name="twitter:image" content="' . $image . '"', $html);
 
     // Also update dynamic url tag
-    $protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? "https" : "http";
-    $url = $protocol . "://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
     $html = preg_replace('/<meta property="og:url" content="(.*?)"/is', '<meta property="og:url" content="' . htmlspecialchars($url) . '"', $html);
 
     echo $html;

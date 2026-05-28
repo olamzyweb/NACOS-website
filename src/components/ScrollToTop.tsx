@@ -5,7 +5,11 @@ const ScrollToTop = () => {
   const { pathname, hash } = useLocation();
 
   useEffect(() => {
-    window.scrollTo(0, 0);
+    // Add a small timeout to allow React to mount the new component first
+    // This prevents the previous page's height from interfering with the scroll
+    setTimeout(() => {
+      window.scrollTo(0, 0);
+    }, 10);
   }, [pathname]);
 
   return null;
