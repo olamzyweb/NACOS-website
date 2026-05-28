@@ -13,6 +13,7 @@ const GROUP_FILTERS = [
   { label: "Social",       value: "social",   cats: ["Social Influencer of the Year","Social Personality of the Year","Most Popular Student","Mr. Money of the Year","Fashion Icon of the Department"] },
   { label: "Creative",     value: "creative", cats: ["Artist of the Year","Content Creator of the Year","CEO of the Year","Tech Entrepreneur/Student Founder","Best Brand of the Year"] },
   { label: "Sports",       value: "sports",   cats: ["Best Male Footballer of the Year","Best Female Footballer of the Year","Best Football Team of the Year"] },
+  { label: "Special",      value: "special",  cats: ["FX Trader of the Year","Best Lecturer of the Year"] },
 ];
 
 const BarRow = ({
@@ -54,7 +55,7 @@ const BarRow = ({
           {rankLabel}
         </div>
 
-        <div className="flex-1 relative h-14 bg-slate-100 rounded-full overflow-hidden">
+        <div className="flex-1 relative h-14 bg-slate-100 rounded-full">
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${pct}%` }}

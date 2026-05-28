@@ -5,7 +5,7 @@ import { Trophy, ArrowRight, Award, Users, Search, CreditCard, CheckSquare, Chev
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import { useCountdown } from "@/hooks/useCountdown";
-import { fetchVotingApi } from "@/lib/api";
+import { fetchVotingApi, resolveImageUrl } from "@/lib/api";
 
 const defaultCategoryGroups = [
   {
@@ -275,20 +275,29 @@ const Awards = () => {
             <p className="text-slate-500 text-lg">Support your candidates in 4 easy steps</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+          <div className="flex justify-between items-start mb-16 max-w-3xl mx-auto relative px-2">
+            {/* Connecting Line behind */}
+            <div className="absolute top-6 left-[10%] right-[10%] h-[2px] bg-slate-100 hidden sm:block -z-10"></div>
+            
             {[
               { icon: Search, title: "Category", desc: "Find the award category" },
               { icon: Users, title: "Nominee", desc: "Pick your favorite candidate" },
               { icon: CheckSquare, title: "Quantity", desc: "Select number of votes" },
               { icon: CreditCard, title: "Confirm", desc: "Secure payment to verify" },
-            ].map((step, index) => (
-              <div key={index} className="text-center group">
-                <div className="w-16 h-16 mx-auto mb-6 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-center group-hover:bg-primary group-hover:border-primary transition-all duration-500 shadow-sm">
-                  <step.icon className="h-6 w-6 text-slate-400 group-hover:text-white transition-colors" />
+            ].map((step, index, arr) => (
+              <div key={index} className="flex-1 text-center group relative flex flex-col items-center">
+                <div className="w-12 h-12 md:w-16 md:h-16 mx-auto mb-3 md:mb-4 bg-white border-2 border-slate-100 rounded-full flex items-center justify-center group-hover:bg-primary group-hover:border-primary transition-all duration-500 shadow-sm relative z-10">
+                  <step.icon className="h-5 w-5 md:h-6 md:w-6 text-slate-400 group-hover:text-white transition-colors" />
                 </div>
-                <div className="text-[10px] font-black text-primary uppercase tracking-[0.3em] mb-2">Step 0{index + 1}</div>
-                <h3 className="font-bold text-lg mb-2 text-slate-900">{step.title}</h3>
-                <p className="text-slate-500 text-xs leading-relaxed">{step.desc}</p>
+                <div className="text-[9px] font-black text-primary uppercase tracking-[0.2em] mb-1 md:mb-2">Step {index + 1}</div>
+                <h3 className="font-bold text-[11px] md:text-sm text-slate-900 leading-tight">{step.title}</h3>
+                
+                {/* Mobile connecting arrow */}
+                {index < arr.length - 1 && (
+                  <div className="absolute top-4 -right-3 text-slate-200 sm:hidden">
+                    <ChevronRight className="h-4 w-4" />
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -432,13 +441,20 @@ const Awards = () => {
                 transition={{ delay: index * 0.1 }}
                 className="group relative bg-white rounded-3xl p-6 border border-slate-100 shadow-sm hover:shadow-xl transition-all flex flex-col sm:flex-row items-center gap-6"
               >
-                <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl text-2xl font-black shadow-lg ${
-                  index === 0 ? "bg-amber-400 text-white" :
-                  index === 1 ? "bg-slate-300 text-white" :
-                  index === 2 ? "bg-orange-500 text-white" :
-                  "bg-slate-100 text-slate-400"
+                <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-full text-2xl font-black shadow-lg overflow-hidden border-[3px] ${
+                  index === 0 ? "border-amber-400" :
+                  index === 1 ? "border-slate-300" :
+                  index === 2 ? "border-orange-500" :
+                  "border-slate-100"
                 }`}>
-                  {index + 1}
+                  <img 
+                    src={resolveImageUrl(cand.photo)} 
+                    alt={cand.name || cand.full_name} 
+                    className="h-full w-full object-cover" 
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(cand.name || cand.full_name || 'User')}&background=0ea5e9&color=fff`;
+                    }}
+                  />
                 </div>
 
                 <div className="flex-1 text-center sm:text-left">

@@ -112,8 +112,26 @@ const NomineeProfile = () => {
   useEffect(() => {
     if (!id) return;
     fetchVotingApi(`/nominees/${id}`)
-      .then((data) => {
-        setNominee(data.nominee);
+      .then(async (data) => {
+        let theNominee = data.nominee;
+        
+        // Fetch the category to get the real ranking since /nominees/:id returns ranking: 1 always
+        try {
+           const slug = theNominee.categorySlug || theNominee.category;
+           if (slug) {
+               const catData = await fetchVotingApi(`/categories/${slug}`);
+               if (catData && catData.nominees) {
+                   const realNominee = catData.nominees.find((n: any) => n.id === theNominee.id || n.slug === theNominee.slug);
+                   if (realNominee) {
+                       theNominee.ranking = realNominee.ranking;
+                   }
+               }
+           }
+        } catch (e) {
+           console.error("Failed to fetch real ranking", e);
+        }
+
+        setNominee(theNominee);
         setSettings(data.settings);
       })
       .catch((err) => {
