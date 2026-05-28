@@ -331,12 +331,12 @@ router.get('/messages', async (_req, res) => {
 });
 
 // Configure disk storage for uploads
-// On Vercel, the filesystem is read-only — use /tmp instead.
+// Prefer the configured uploads dir (e.g., Railway volume mount).
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const UPLOADS_DIR = process.env.VERCEL
-  ? '/tmp/uploads'
-  : path.join(__dirname, '../uploads');
+const UPLOADS_DIR = process.env.UPLOADS_DIR
+  ? path.resolve(process.env.UPLOADS_DIR)
+  : (process.env.VERCEL ? '/tmp/uploads' : path.join(__dirname, '../uploads'));
 
 try {
   if (!fs.existsSync(UPLOADS_DIR)) {
