@@ -10,7 +10,31 @@ $nomineeBio = "Support this candidate in the NACOS Awards!";
 $photoUrl = "https://nacoslasustech.org.ng/og-image.png"; // Fallback
 $categoryName = "NACOS Awards Category";
 
-// 2. Fetch nominee details from the voting backend API if we have an ID
+// 2. Determine if the request is from a social media bot
+$userAgent = isset($_SERVER['HTTP_USER_AGENT']) ? strtolower($_SERVER['HTTP_USER_AGENT']) : '';
+$isBot = false;
+$botKeywords = ['facebookexternalhit', 'whatsapp', 'twitterbot', 'linkedinbot', 'telegrambot', 'skypeuripreview', 'slackbot', 'vkshare', 'bingbot', 'googlebot'];
+
+foreach ($botKeywords as $keyword) {
+    if (strpos($userAgent, $keyword) !== false) {
+        $isBot = true;
+        break;
+    }
+}
+
+// If it's a real user (not a bot), skip the backend fetch and serve index.html immediately!
+if (!$isBot) {
+    $htmlFile = __DIR__ . '/index.html';
+    if (file_exists($htmlFile)) {
+        echo file_get_contents($htmlFile);
+    } else {
+        // Fallback redirect
+        header("Location: /");
+    }
+    exit;
+}
+
+// 3. Fetch nominee details from the voting backend API if we have an ID
 if (!empty($id)) {
     $apiUrl = "https://nacos-website-production.up.railway.app/api/nominees/" . urlencode($id);
     
