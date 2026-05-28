@@ -184,7 +184,7 @@ const Awards = () => {
                     <span className="text-xs font-black text-primary uppercase tracking-[0.3em]">Awards Day Countdown</span>
                   </div>
                   {awardCountdown.expired ? (
-                    <p className="text-white font-black text-xl">It is Awards Night.</p>
+                    <p className="text-white font-black text-xl">It is Awards Day!</p>
                   ) : (
                     <div className="grid grid-cols-4 gap-3">
                       {[
@@ -203,7 +203,7 @@ const Awards = () => {
                     </div>
                   )}
                   <p className="mt-4 text-white/70 text-[11px] font-bold">
-                    NACOS Awards Gala Night - <span className="text-primary font-black">17th June 2026</span>
+                    NACOS Awards Day - <span className="text-primary font-black">17th June 2026</span>
                   </p>
                 </motion.div>
               </div>

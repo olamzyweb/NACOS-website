@@ -142,7 +142,7 @@ const Index = () => {
                 }}
                 className="w-full sm:w-auto sm:min-w-[200px] bg-[#1F5FAF] text-xs sm:text-base font-bold text-white hover:bg-[#184d90] shadow-2xl shadow-blue-500/40 p-6"
               >
-                {isLoggedIn ? "Visit Dashboard" : "Go to Dashboard"}
+                {isLoggedIn ? "Visit Portal" : "Go to Portal"}
               </Button>
             </div>
           </div>
@@ -186,10 +186,10 @@ const Index = () => {
 
                     <div className="min-w-0 flex-1">
                       <h3 className="text-[11px] sm:text-sm font-bold text-foreground">
-                        {item.action === "login" && isLoggedIn ? "Visit Dashboard" : item.label}
+                        {item.action === "login" && isLoggedIn ? (item.targetTab === "overview" ? "Visit Portal" : item.label) : item.label}
                       </h3>
                       <p className="hidden sm:block mt-1 text-[11px] leading-5 text-muted-foreground">
-                        {item.action === "login" && isLoggedIn ? "You are currently logged in" : item.desc}
+                        {item.action === "login" && isLoggedIn ? (item.targetTab === "overview" ? "You are currently logged in" : item.desc) : item.desc}
                       </p>
                     </div>
 
@@ -415,7 +415,7 @@ const Index = () => {
               onClick={() => isLoggedIn ? navigate("/dashboard", { state: { tab: "overview" } }) : setLoginOpen(true)}
               className="flex-1 sm:flex-initial border-white/30 font-bold text-secondary hover:bg-white/10 p-2 sm:p-6 text-[10px] sm:text-base"
             >
-              {isLoggedIn ? "Visit Dashboard" : "Member Dashboard"}
+              {isLoggedIn ? "Visit Portal" : "Member Portal"}
             </Button>
           </div>
     </div>

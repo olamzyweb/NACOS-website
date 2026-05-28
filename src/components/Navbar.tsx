@@ -33,7 +33,7 @@ const getNavLinks = () => {
     { label: "Home", path: "/", icon: Home },
     { label: "Executives", path: "/executives", icon: Users },
     { label: "Events", path: "/events", icon: CalendarDays },
-    { label: "Donate", path: "/donate", icon: Heart },
+    { label: "Awards", path: "https://awards.nacoslasustech.org.ng", icon: Award, external: true },
     { label: "Constitution", path: "/constitution", icon: BookOpen },
     { label: "Contact", path: "/contact", icon: Phone },
   ];
@@ -116,7 +116,18 @@ const Navbar = () => {
                   const isActive = location.pathname === link.path;
                   const Icon = link.icon;
 
-                  return (
+                  return link.external ? (
+                    <a
+                      key={link.path}
+                      href={link.path}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`flex items-center gap-2 rounded-full px-4 py-2 text-[13px] font-medium transition text-muted-foreground hover:text-foreground`}
+                    >
+                      <Icon className="h-3.5 w-3.5" />
+                      {link.label}
+                    </a>
+                  ) : (
                     <Link
                       key={link.path}
                       to={link.path}
@@ -306,7 +317,24 @@ const Navbar = () => {
                 const isActive = location.pathname === link.path;
                 const Icon = link.icon;
 
-                return (
+                return link.external ? (
+                  <a
+                    key={link.path}
+                    href={link.path}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ transitionDelay: `${i * 50}ms` }}
+                    className={`flex items-center justify-between rounded-2xl px-5 py-4 transition-all duration-300 text-muted-foreground hover:bg-accent hover:text-foreground ${mobileOpen ? "translate-x-0 opacity-100" : "-translate-x-4 opacity-0"}`}
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                        <Icon className="h-5 w-5" />
+                      </div>
+                      <span className="font-semibold">{link.label}</span>
+                    </div>
+                    <ChevronRight className={`h-4 w-4 opacity-30`} />
+                  </a>
+                ) : (
                   <Link
                     key={link.path}
                     to={link.path}

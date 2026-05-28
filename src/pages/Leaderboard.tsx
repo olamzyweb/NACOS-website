@@ -40,55 +40,59 @@ const BarRow = ({
   ];
   const badgeColor = badgeColors[rank - 1] ?? "bg-slate-100 text-slate-500";
   const rankLabel = rank === 1 ? "Rank 1" : rank === 2 ? "Rank 2" : rank === 3 ? "Rank 3" : `Rank ${rank}`;
+  const profileUrl = `/voting/${nominee.categorySlug || 'category'}/${nominee.slug || nominee.id}`;
 
   return (
     <motion.div
       initial={{ opacity: 0, x: -30 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay, duration: 0.4 }}
-      className="flex items-center gap-4 group"
+      className="group"
     >
-      <div className={`h-9 w-9 shrink-0 rounded-xl flex items-center justify-center text-[10px] font-black shadow-sm ${badgeColor}`}>
-        {rankLabel}
-      </div>
+      <Link to={profileUrl} className="flex items-center gap-3 sm:gap-4 cursor-pointer">
+        <div className={`h-8 w-8 sm:h-9 sm:w-9 shrink-0 rounded-xl flex items-center justify-center text-[8px] sm:text-[10px] font-black shadow-sm ${badgeColor}`}>
+          {rankLabel}
+        </div>
 
-      <div className="flex-1 relative h-14 bg-slate-100 rounded-full overflow-hidden">
-        <motion.div
-          initial={{ width: 0 }}
-          animate={{ width: `${pct}%` }}
-          transition={{ duration: 1.4, delay: delay + 0.1, ease: [0.34, 1.2, 0.64, 1] }}
-          className={`absolute inset-y-0 left-0 rounded-full bg-gradient-to-r ${barColor} flex items-center min-w-[3rem]`}
-        >
-          <span className="pl-5 text-xs font-black text-white drop-shadow truncate max-w-[55%] leading-none pr-10 whitespace-nowrap">
-            {nominee.name}
-          </span>
-        </motion.div>
+        <div className="flex-1 relative h-14 bg-slate-100 rounded-full overflow-hidden">
+          <motion.div
+            initial={{ width: 0 }}
+            animate={{ width: `${pct}%` }}
+            transition={{ duration: 1.4, delay: delay + 0.1, ease: [0.34, 1.2, 0.64, 1] }}
+            className={`absolute inset-y-0 left-0 rounded-full bg-gradient-to-r ${barColor} flex items-center min-w-[3rem]`}
+          >
+            <span className="pl-3 sm:pl-5 text-[10px] sm:text-xs font-black text-white drop-shadow truncate max-w-[55%] leading-none pr-10 whitespace-nowrap">
+              {nominee.name}
+            </span>
+          </motion.div>
 
-        <motion.div
-          initial={{ left: "-28px" }}
-          animate={{ left: `calc(${pct}% - 28px)` }}
-          transition={{ duration: 1.4, delay: delay + 0.1, ease: [0.34, 1.2, 0.64, 1] }}
-          className="absolute top-1 bottom-1 w-12 rounded-full overflow-hidden border-[3px] border-white shadow-xl z-10 bg-slate-200"
-        >
-          <img
-            src={resolveImageUrl(nominee.photo)}
-            alt={nominee.name}
-            className="h-full w-full object-cover"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(nominee.name)}&background=0ea5e9&color=fff&size=96&bold=true&font-size=0.4`;
-            }}
-          />
-        </motion.div>
-      </div>
+          <motion.div
+            initial={{ left: "-28px" }}
+            animate={{ left: `calc(${pct}% - 28px)` }}
+            transition={{ duration: 1.4, delay: delay + 0.1, ease: [0.34, 1.2, 0.64, 1] }}
+            className="absolute top-1 bottom-1 w-12 rounded-full overflow-hidden border-[3px] border-white shadow-xl z-10 bg-slate-200"
+          >
+            <img
+              src={resolveImageUrl(nominee.photo)}
+              alt={nominee.name}
+              className="h-full w-full object-cover"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(nominee.name)}&background=0ea5e9&color=fff&size=96&bold=true&font-size=0.4`;
+              }}
+            />
+          </motion.div>
+        </div>
 
-      <Link
-        to={`/voting/${nominee.categorySlug || 'category'}/${nominee.slug || nominee.id}`}
-        onClick={(e) => e.stopPropagation()}
-        className="shrink-0 hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-slate-200 bg-white text-xs font-bold text-slate-500 hover:bg-primary hover:text-white hover:border-primary transition-all shadow-sm whitespace-nowrap"
-      >
-        <Vote className="h-3 w-3" />
-        Vote
+        <div className="shrink-0 flex items-center gap-1.5 px-2 sm:px-3 py-1.5 rounded-full border border-slate-200 bg-white text-[10px] sm:text-xs font-bold text-slate-500 hover:bg-primary hover:text-white hover:border-primary transition-all shadow-sm whitespace-nowrap">
+          <Vote className="h-3 w-3" />
+          Vote
+        </div>
       </Link>
+      {nominee.categoryName && (
+        <p className="ml-11 sm:ml-[52px] mt-1 text-[10px] sm:text-[11px] font-semibold text-slate-400 truncate">
+          {nominee.categoryName}
+        </p>
+      )}
     </motion.div>
   );
 };

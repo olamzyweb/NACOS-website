@@ -3,25 +3,55 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>NACOS LASUSTECH | Official Hub</title>
+    <title>NACOS LASUSTECH | Official Website</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <meta name="description" content="Official digital home for the Nigeria Association of Computing Students (NACOS), LASUSTECH Chapter. Empowering future tech leaders through innovation and community." />
     <meta name="author" content="NACOS LASUSTECH Chapter" />
 
-    <meta property="og:title" content="NACOS LASUSTECH Hub" />
+    <meta property="og:title" content="NACOS LASUSTECH Website" />
     <meta property="og:description" content="The official platform for computing students at LASUSTECH. Access resources, pay dues, and join our tech community." />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="/og-image.png" />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@nacoslasustech" />
-    <meta name="twitter:title" content="NACOS LASUSTECH Hub" />
+    <meta name="twitter:title" content="NACOS LASUSTECH Website" />
     <meta name="twitter:description" content="Empowering the next generation of computing leaders at LASUSTECH." />
     <meta name="twitter:image" content="/og-image.png" />
   </head>
 
   <body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" style="position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#08111d;transition:opacity 0.5s ease">
+      <div style="display:flex;gap:12px;align-items:center;animation:spin-logos 1.2s linear infinite">
+        <img src="/favicon.ico" alt="" style="height:36px;width:36px;object-fit:contain;border-radius:50%" />
+      </div>
+      <p style="margin-top:16px;color:rgba(255,255,255,0.5);font-size:11px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;font-family:system-ui,sans-serif">NACOS LASUSTECH</p>
+      <style>
+        @keyframes spin-logos {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      </style>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      // Fade out loading screen once the app has rendered
+      const observer = new MutationObserver(() => {
+        const root = document.getElementById('root');
+        if (root && root.children.length > 0) {
+          const loader = document.getElementById('loading-screen');
+          if (loader) {
+            loader.style.opacity = '0';
+            setTimeout(() => loader.remove(), 500);
+          }
+          observer.disconnect();
+        }
+      });
+      observer.observe(document.getElementById('root'), { childList: true });
+      // Fallback: remove loader after 6 seconds
+      setTimeout(() => { const l = document.getElementById('loading-screen'); if (l) { l.style.opacity='0'; setTimeout(()=>l.remove(),500); } }, 6000);
+    </script>
   </body>
 </html>

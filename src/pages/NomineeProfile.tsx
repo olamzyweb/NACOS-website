@@ -162,11 +162,11 @@ const NomineeProfile = () => {
 
     // Clean up to restore defaults when unmounted or changing candidates
     return () => {
-      document.title = "NACOS LASUSTECH | Official Hub";
-      setMetaContent('meta[property="og:title"]', "NACOS LASUSTECH Hub");
+      document.title = "NACOS LASUSTECH | Official Website";
+      setMetaContent('meta[property="og:title"]', "NACOS LASUSTECH Website");
       setMetaContent('meta[property="og:description"]', "The official platform for computing students at LASUSTECH. Access resources, pay dues, and join our tech community.");
       setMetaContent('meta[property="og:image"]', "/og-image.png");
-      setMetaContent('meta[name="twitter:title"]', "NACOS LASUSTECH Hub");
+      setMetaContent('meta[name="twitter:title"]', "NACOS LASUSTECH Website");
       setMetaContent('meta[name="twitter:description"]', "Empowering the next generation of computing leaders at LASUSTECH.");
       setMetaContent('meta[name="twitter:image"]', "/og-image.png");
     };
