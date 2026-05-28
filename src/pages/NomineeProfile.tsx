@@ -187,10 +187,10 @@ const NomineeProfile = () => {
   };
 
   const shareUrl = encodeURIComponent(window.location.href);
-  const rawShareText = `Please vote for ${nominee?.name} for ${nominee?.categoryName || nominee?.category || "NACOS Awards 2026"}.
+  const rawShareText = `Vote for ${nominee?.name} contesting for ${nominee?.categoryName || nominee?.category || "NACOS Awards 2026"}.
 
-1 Vote: ₦100
-20 Votes: ₦2,000
+5 Votes: ₦500
+10 Votes: ₦1,000
 50 Votes: ₦5,000
 100 Votes: ₦10,000
 

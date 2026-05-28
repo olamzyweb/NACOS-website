@@ -17,7 +17,9 @@ if (!empty($id)) {
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $apiUrl);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 3); // Quick timeout
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // Crucial: Disable SSL checks on cPanel curl
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 5); // 5s timeout
     $response = curl_exec($ch);
     curl_close($ch);
 
@@ -27,15 +29,16 @@ if (!empty($id)) {
             $nominee = $data['nominee'];
             $nomineeName = isset($nominee['name']) ? $nominee['name'] : $nomineeName;
             $categoryName = isset($nominee['categoryName']) ? $nominee['categoryName'] : (isset($nominee['category']) ? $nominee['category'] : $categoryName);
-            $nomineeBio = "Support " . $nomineeName . " in the category of \"" . $categoryName . "\"!";
+            $nomineeBio = "Vote for " . $nomineeName . " contesting for \"" . $categoryName . "\".";
             
-            // Resolve photo URL (Main Vercel backend hosts the physical files)
+            // Resolve photo URL (cPanel persistent uploads)
             $photo = isset($nominee['photo']) ? $nominee['photo'] : '';
             if (!empty($photo)) {
                 if (strpos($photo, 'http://') === 0 || strpos($photo, 'https://') === 0) {
                     $photoUrl = $photo;
                 } else {
-                    $photoUrl = "https://nacos-backend-theta.vercel.app/" . ltrim($photo, '/');
+                    $protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? "https" : "http";
+                    $photoUrl = $protocol . "://" . $_SERVER['HTTP_HOST'] . "/" . ltrim($photo, '/');
                 }
             }
         }
