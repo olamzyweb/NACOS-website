@@ -372,7 +372,7 @@ Your support will be highly appreciated, and God bless you as you do so. Please 
 
                 {/* WhatsApp */}
                 <a
-                  href={`https://wa.me/?text=${shareText}%20${shareUrl}`}
+                  href={`https://api.whatsapp.com/send?text=${shareText}%20${shareUrl}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 rounded-full bg-[#25D366] hover:bg-[#1ebe5d] text-white font-bold text-sm px-5 py-2.5 transition-all hover:-translate-y-0.5 shadow-sm"
@@ -386,7 +386,7 @@ Your support will be highly appreciated, and God bless you as you do so. Please 
 
                 {/* Facebook */}
                 <a
-                  href={`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}&quote=${shareText}`}
+                  href={`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 rounded-full bg-[#1877F2] hover:bg-[#1565d8] text-white font-bold text-sm px-5 py-2.5 transition-all hover:-translate-y-0.5 shadow-sm"
