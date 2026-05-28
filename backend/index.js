@@ -82,9 +82,9 @@ app.use(limiter);
  * environment, uploads are ephemeral (/tmp). For persistent
  * file storage in production, migrate to Cloudinary or S3.
  */
-const uploadsPath = process.env.VERCEL
-  ? '/tmp/uploads'
-  : path.join(__dirname, 'uploads');
+const uploadsPath = process.env.UPLOADS_DIR
+  ? path.resolve(process.env.UPLOADS_DIR)
+  : (process.env.VERCEL ? '/tmp/uploads' : path.join(__dirname, 'uploads'));
 
 app.use('/uploads', express.static(uploadsPath));
 
