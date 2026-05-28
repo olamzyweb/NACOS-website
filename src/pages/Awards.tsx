@@ -66,9 +66,9 @@ const Awards = () => {
       });
   }, []);
 
-  const awardsTargetDate = overview?.settings?.awardsDate 
-    ? new Date(overview.settings.awardsDate) 
-    : DEFAULT_AWARDS_DATE;
+  // User requested exact date: June 11th 2026 00:00
+  const DEFAULT_AWARDS_DATE = new Date("2026-06-11T00:00:00+01:00");
+  const awardsTargetDate = DEFAULT_AWARDS_DATE;
 
   const awardCountdown = useCountdown(awardsTargetDate);
 

@@ -385,9 +385,11 @@ const VotingCategories = () => {
     }
   }, [loading, categories, location.search]);
 
-  const closesAtDate = settings?.votingClosesAt 
-    ? new Date(settings.votingClosesAt) 
-    : DEFAULT_VOTING_END_DATE;
+  // User requested exact date: June 11th 2026 00:00
+  const DEFAULT_VOTING_END_DATE = new Date("2026-06-11T00:00:00+01:00");
+    
+  // We ignore settings?.votingClosesAt here because of date format confusion in admin panel
+  const closesAtDate = DEFAULT_VOTING_END_DATE;
     
   const countdown = useCountdown(closesAtDate);
 
