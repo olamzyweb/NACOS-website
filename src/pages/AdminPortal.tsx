@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { adminFetch, clearAdminSession, loginToAdminSystems, votingAdminFetch } from "@/lib/admin-api";
-import { BarChart3, Calendar, FileText, Flag, Image, LogOut, Settings, ShieldCheck, Trophy, Users, Search, ChevronDown, ChevronUp, Plus, Trash2, Edit2, ImagePlus, Award, Check, X, SlidersHorizontal, ArrowUpDown, Clock, CreditCard, Receipt } from "lucide-react";
+import { BarChart3, Calendar, FileText, Flag, Image, LogOut, Settings, ShieldCheck, Trophy, Users, Search, ChevronDown, ChevronUp, Plus, Trash2, Edit2, ImagePlus, Award, Check, X, SlidersHorizontal, ArrowUpDown, Clock, CreditCard, Receipt, Menu } from "lucide-react";
 
 type TabKey = "overview" | "students" | "academics" | "executives" | "events" | "voting";
 
@@ -14,7 +14,7 @@ const emptyEvent = { id: "", slug: "", title: "", event_status: "upcoming", star
 const emptyBlog = { id: "", slug: "", title: "", excerpt: "", content: "", author: "", category: "", image_url: "", published_at: "", is_published: true };
 const emptySection = { id: "", section_key: "", section_name: "", description: "", flyer_image_url: "", folder_name: "", sort_order: 0, is_active: true };
 const emptyCategory = { id: "", slug: "", name: "", description: "", group_key: "", group_name: "", group_sort: 0, accent_color: "#0f9d58", hero_image: "", vote_price: 100, sort_order: 0, is_active: true };
-const emptyNominee = { id: "", category_id: "", slug: "", full_name: "", department: "Computer Science", level_label: "", bio: "", photo_url: "", is_active: true };
+const emptyNominee = { id: "", category_id: "", category_ids: [] as string[], slug: "", full_name: "", department: "Computer Science", level_label: "", bio: "", photo_url: "", is_active: true };
 
 const slugify = (value: string) =>
   value
@@ -58,6 +58,8 @@ const AdminPortal = () => {
   const [txSearchQuery, setTxSearchQuery] = useState("");
   const [txStatusFilter, setTxStatusFilter] = useState("all");
   const [txExpanded, setTxExpanded] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [categorySearchQuery, setCategorySearchQuery] = useState("");
 
 
   const filteredTransactions = (votingTransactions || []).filter((tx) => {
@@ -410,6 +412,70 @@ const AdminPortal = () => {
   return (
     <Layout noReveal>
       <div className="min-h-screen bg-[#f5f7f2]">
+        {/* Mobile Header */}
+        <header className="flex items-center justify-between bg-[#062018] px-5 py-4 text-white lg:hidden shadow-md">
+          <div className="flex flex-col">
+            <span className="text-[10px] uppercase tracking-[0.35em] text-primary/80 font-bold">NACOS Admin</span>
+            <span className="font-display text-sm font-bold">Control Centre</span>
+          </div>
+          <button 
+            onClick={() => setMobileMenuOpen(true)}
+            className="rounded-lg bg-white/10 p-2 text-white hover:bg-white/20 transition"
+          >
+            <Menu className="h-5 w-5" />
+          </button>
+        </header>
+
+        {/* Mobile Sidebar/Drawer Overlay */}
+        {mobileMenuOpen && (
+          <div className="fixed inset-0 z-50 flex lg:hidden bg-black/60 backdrop-blur-sm animate-fadeIn">
+            <div className="relative w-80 max-w-[85vw] bg-[#062018] p-6 text-white flex flex-col h-full shadow-2xl">
+              {/* Close Button */}
+              <button 
+                onClick={() => setMobileMenuOpen(false)}
+                className="absolute right-4 top-4 rounded-lg bg-white/10 p-2 text-white hover:bg-white/20 transition"
+              >
+                <X className="h-4 w-4" />
+              </button>
+
+              <p className="text-xs uppercase tracking-[0.35em] text-primary/80 font-bold">NACOS Admin</p>
+              <h1 className="mt-4 font-display text-2xl font-bold">Control Centre</h1>
+              <p className="mt-2 text-xs text-white/65">{adminUser.name}</p>
+
+              <div className="mt-8 space-y-2 flex-1 overflow-y-auto">
+                {navItems.map((item) => (
+                  <button 
+                    key={item.id} 
+                    onClick={() => {
+                      setActiveTab(item.id);
+                      setMobileMenuOpen(false);
+                    }} 
+                    className={`flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm transition ${activeTab === item.id ? "bg-white text-[#062018]" : "text-white/70 hover:bg-white/10 hover:text-white"}`}
+                  >
+                    <item.icon className="h-4 w-4" />
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  handleLogout();
+                  setMobileMenuOpen(false);
+                }} 
+                className="mt-auto w-full justify-start rounded-2xl border-white/20 bg-transparent text-white hover:bg-white hover:text-[#062018] h-11"
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                Sign Out
+              </Button>
+            </div>
+            
+            {/* Click outside to close */}
+            <div className="flex-1" onClick={() => setMobileMenuOpen(false)} />
+          </div>
+        )}
+
         <div className="mx-auto flex max-w-[1600px] gap-6 px-4 py-6 lg:px-6">
           <aside className="hidden w-72 shrink-0 rounded-[2rem] bg-[#062018] p-6 text-white lg:block sticky top-6 h-fit">
             <p className="text-xs uppercase tracking-[0.35em] text-primary/80">NACOS Admin</p>
@@ -1172,10 +1238,56 @@ const AdminPortal = () => {
                     <div className="mt-4 space-y-4">
                       <div>
                         <label className="mb-1 block text-[10px] font-bold uppercase tracking-widest text-slate-500">Category Selection</label>
-                        <select className="flex h-10 w-full rounded-xl border border-border bg-background px-3 text-sm" value={nomineeForm.category_id} onChange={(e) => setNomineeForm({ ...nomineeForm, category_id: e.target.value })}>
-                          <option value="">Select category</option>
-                          {(votingDashboard?.categories || []).map((item: any) => <option key={item.id} value={item.id}>{item.name}</option>)}
-                        </select>
+                        {nomineeForm.id ? (
+                          <select className="flex h-10 w-full rounded-xl border border-border bg-background px-3 text-sm" value={nomineeForm.category_id} onChange={(e) => setNomineeForm({ ...nomineeForm, category_id: e.target.value, category_ids: [e.target.value] })}>
+                            <option value="">Select category</option>
+                            {(votingDashboard?.categories || []).map((item: any) => <option key={item.id} value={item.id}>{item.name}</option>)}
+                          </select>
+                        ) : (
+                          <div className="space-y-2 rounded-2xl border border-slate-200 p-4 bg-slate-50/50">
+                            <Input 
+                              type="text" 
+                              placeholder="Search categories..." 
+                              value={categorySearchQuery} 
+                              onChange={(e) => setCategorySearchQuery(e.target.value)}
+                              className="h-8 text-xs rounded-lg"
+                            />
+                            <div className="max-h-[220px] overflow-y-auto space-y-2 pr-1 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:bg-slate-200 [&::-webkit-scrollbar-thumb]:rounded-full">
+                              {(votingDashboard?.categories || [])
+                                .filter((cat: any) => String(cat.name).toLowerCase().includes(categorySearchQuery.toLowerCase()))
+                                .map((cat: any) => {
+                                  const isChecked = (nomineeForm.category_ids || []).includes(cat.id);
+                                  return (
+                                    <label key={cat.id} className="flex items-start gap-2.5 rounded-lg p-2 hover:bg-slate-100/80 cursor-pointer transition text-xs text-slate-700">
+                                      <input 
+                                        type="checkbox" 
+                                        checked={isChecked}
+                                        className="mt-0.5 rounded border-slate-300 text-primary focus:ring-primary"
+                                        onChange={() => {
+                                          const currentIds = nomineeForm.category_ids || [];
+                                          const nextIds = isChecked 
+                                            ? currentIds.filter((id: string) => id !== cat.id)
+                                            : [...currentIds, cat.id];
+                                          setNomineeForm({ 
+                                            ...nomineeForm, 
+                                            category_ids: nextIds,
+                                            category_id: nextIds[0] || "" 
+                                          });
+                                        }}
+                                      />
+                                      <span>{cat.name}</span>
+                                    </label>
+                                  );
+                                })}
+                            </div>
+                            <div className="flex items-center justify-between border-t border-slate-100 pt-2 text-[10px] text-slate-400 font-semibold">
+                              <span>{(nomineeForm.category_ids || []).length} categories selected</span>
+                              {(nomineeForm.category_ids || []).length > 0 && (
+                                <button type="button" className="text-red-500 hover:text-red-705" onClick={() => setNomineeForm({ ...nomineeForm, category_ids: [], category_id: "" })}>Clear all</button>
+                              )}
+                            </div>
+                          </div>
+                        )}
                       </div>
                       <div className="grid gap-4 md:grid-cols-2">
                         <div>
@@ -1222,13 +1334,33 @@ const AdminPortal = () => {
                       </div>
                       <div className="flex gap-3">
                         <Button disabled={submitting} className="h-9 px-4 rounded-xl text-xs" onClick={() => withSubmit(async () => {
-                          const method = nomineeForm.id ? "PUT" : "POST";
-                          const endpoint = nomineeForm.id ? `/admin/nominees/${nomineeForm.id}` : "/admin/nominees";
-                          await votingAdminFetch(endpoint, { method, body: JSON.stringify(nomineeForm) });
+                          if (nomineeForm.id) {
+                            await votingAdminFetch(`/admin/nominees/${nomineeForm.id}`, { method: "PUT", body: JSON.stringify(nomineeForm) });
+                          } else {
+                            const selectedCategories = nomineeForm.category_ids || [];
+                            if (selectedCategories.length === 0 && nomineeForm.category_id) {
+                              selectedCategories.push(nomineeForm.category_id);
+                            }
+                            if (selectedCategories.length === 0) {
+                              throw new Error("Please select at least one category.");
+                            }
+                            for (let i = 0; i < selectedCategories.length; i++) {
+                              const catId = selectedCategories[i];
+                              const baseSlug = nomineeForm.slug || slugify(nomineeForm.full_name);
+                              const categorySlug = i === 0 ? baseSlug : `${baseSlug}-${i}`;
+                              const payload = {
+                                ...nomineeForm,
+                                category_id: catId,
+                                slug: categorySlug
+                              };
+                              await votingAdminFetch("/admin/nominees", { method: "POST", body: JSON.stringify(payload) });
+                            }
+                          }
                           setNomineeForm(emptyNominee);
+                          setCategorySearchQuery("");
                           await refreshVoting();
                         }, "Nominee saved.")}>{nomineeForm.id ? "Update Nominee" : "Add Nominee"}</Button>
-                        <Button variant="outline" className="h-9 px-4 rounded-xl text-xs" onClick={() => setNomineeForm(emptyNominee)}>Clear</Button>
+                        <Button variant="outline" className="h-9 px-4 rounded-xl text-xs" onClick={() => { setNomineeForm(emptyNominee); setCategorySearchQuery(""); }}>Clear</Button>
                       </div>
                     </div>
                     <div className="mt-6 max-h-[300px] overflow-y-auto [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:bg-slate-200 [&::-webkit-scrollbar-thumb]:rounded-full space-y-3">
