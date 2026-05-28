@@ -263,7 +263,7 @@ const Footer = () => {
                 <a href="#" className="hover:text-white transition-colors underline underline-offset-4">Muqtech</a>,
                 <a href="#" className="hover:text-white transition-colors underline underline-offset-4">DevMoh</a>,
                 <a href="https://makinde-portfolio.vercel.app" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors underline underline-offset-4">Polytencode</a>,
-                & <a href="#" className="hover:text-white transition-colors underline underline-offset-4">C'est BroCode</a>
+                & <a href="https://devola.xyz" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors underline underline-offset-4">Olamzyweb</a>
               </span>
             </p>
             <p className="hidden md:block opacity-10">|</p>
