@@ -259,11 +259,16 @@ router.post("/transactions/initialize", async (req, res, next) => {
       [reference, nomineeId, voterName, voterEmail, votes, amount, settings.currency || config.voting.currency],
     );
 
+    // Dynamically resolve frontendUrl from client request to prevent localhost redirect issues
+    const frontendUrl = req.body.frontendUrl || req.headers.origin || config.frontendUrl;
+    const redirectUrl = `${frontendUrl.replace(/\/$/, "")}/voting/leaderboard?reference=${reference}`;
+
     const paymentResponse = await KorapayService.initializeTransaction({
       email: voterEmail,
       name: voterName,
       amount,
       reference,
+      redirectUrl,
       metadata: {
         nominee_id: nomineeId,
         nominee_name: nominee.full_name,

@@ -2,7 +2,7 @@ import axios from "axios";
 import { config } from "../config.js";
 
 class KorapayService {
-  async initializeTransaction({ email, name, amount, reference, metadata }) {
+  async initializeTransaction({ email, name, amount, reference, metadata, redirectUrl }) {
     const response = await axios.post(
       `${config.korapay.baseUrl}/charges/initialize`,
       {
@@ -13,7 +13,7 @@ class KorapayService {
           email,
           name,
         },
-        redirect_url: `${config.frontendUrl}/voting/leaderboard?reference=${reference}`,
+        redirect_url: redirectUrl || `${config.frontendUrl}/voting/leaderboard?reference=${reference}`,
         notification_url: `${config.webhookBaseUrl}/api/voting/webhooks/korapay`,
         metadata,
       },

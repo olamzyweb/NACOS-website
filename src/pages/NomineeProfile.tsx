@@ -214,6 +214,7 @@ Your support will be highly appreciated, and God bless you as you do so. Please 
           voterName: voterName.trim(),
           voterEmail: voterEmail.trim(),
           votes: effectiveVotes,
+          frontendUrl: window.location.origin,
         }),
       });
 
