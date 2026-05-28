@@ -1,0 +1,16 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  
+  # Detect social media crawler user agents and rewrite nominee links to share.php
+  RewriteCond %{HTTP_USER_AGENT} (facebookexternalhit|WhatsApp|Twitterbot|LinkedInBot|Pinterest|Slackbot|TelegramBot|discordapp) [NC]
+  RewriteRule ^voting/([^/]+)/([^/]+)$ share.php?category=$1&id=$2 [L,QSA]
+  
+  # If the requested file or directory exists, serve it directly
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+  
+  # Otherwise, route all other requests to index.html
+  RewriteRule ^ index.html [L]
+</IfModule>

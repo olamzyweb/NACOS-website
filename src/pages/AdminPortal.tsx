@@ -210,12 +210,19 @@ const AdminPortal = () => {
     formData.append("image", file);
     
     try {
+      const uploadUrl = import.meta.env.DEV 
+        ? ((import.meta.env.VITE_API_URL || "http://localhost:5000/api").replace(/\/$/, "") + "/admin/upload")
+        : (window.location.origin + "/upload.php");
+
       const token = localStorage.getItem("adminToken");
-      const res = await fetch((import.meta.env.VITE_API_URL || "http://localhost:5000/api").replace(/\/$/, "") + "/admin/upload", {
+      const headers: Record<string, string> = {};
+      if (import.meta.env.DEV && token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+
+      const res = await fetch(uploadUrl, {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`
-        },
+        headers,
         body: formData
       });
       
