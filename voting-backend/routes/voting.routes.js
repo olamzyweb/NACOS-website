@@ -15,7 +15,9 @@ const defaultSettings = () => ({
   votingOpen: "1",
   paymentProvider: "korapay",
   paymentProviderLabel: "Korapay",
-  paymentProviderDescription: "Secured by Korapay test checkout",
+  paymentProviderDescription: "Secured by Korapay",
+  closedCategories: "",
+  hideCountdown: "0",
 });
 
 const loadSettings = async () => {
@@ -240,12 +242,17 @@ router.post("/transactions/initialize", async (req, res, next) => {
     }
 
     const [[nominee]] = await pool.query(
-      "SELECT id, full_name FROM voting_nominees WHERE id = ? AND is_active = 1",
+      "SELECT id, full_name, category_id FROM voting_nominees WHERE id = ? AND is_active = 1",
       [nomineeId],
     );
 
     if (!nominee) {
       res.status(404).json({ message: "Nominee not found." });
+      return;
+    }
+
+    if (settings.closedCategories && settings.closedCategories.split(",").includes(String(nominee.category_id))) {
+      res.status(409).json({ message: "Voting is currently closed for this category." });
       return;
     }
 
