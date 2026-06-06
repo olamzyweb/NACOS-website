@@ -16,8 +16,6 @@ const defaultSettings = () => ({
   paymentProvider: "korapay",
   paymentProviderLabel: "Korapay",
   paymentProviderDescription: "Secured by Korapay",
-  closedCategories: "",
-  hideCountdown: "0",
 });
 
 const loadSettings = async () => {
@@ -130,7 +128,14 @@ router.get("/overview", async (_req, res, next) => {
       `${categorySelectBase} GROUP BY c.id ORDER BY c.group_sort ASC, c.sort_order ASC, c.name ASC`
     );
     const [leaderboardRows] = await pool.query(`${nomineeSelect} GROUP BY n.id`);
-    const leaderboard = withRankings(leaderboardRows);
+    
+    const excludedKeywords = ['emerging', 'fresher', 'exceptional', 'male tech'];
+    const filteredRows = leaderboardRows.filter(row => {
+      const name = (row.categoryName || '').toLowerCase();
+      return !excludedKeywords.some(kw => name.includes(kw));
+    });
+
+    const leaderboard = withRankings(filteredRows);
 
     res.json({
       settings,
@@ -213,9 +218,15 @@ router.get("/leaderboard", async (req, res, next) => {
       params,
     );
 
+    const excludedKeywords = ['emerging', 'fresher', 'exceptional', 'male tech'];
+    const filteredRows = nomineeRows.filter(row => {
+      const name = (row.categoryName || '').toLowerCase();
+      return !excludedKeywords.some(kw => name.includes(kw));
+    });
+
     res.json({
       settings,
-      nominees: withRankings(nomineeRows),
+      nominees: withRankings(filteredRows),
     });
   } catch (error) {
     next(error);
